@@ -40,6 +40,7 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+//DMA_HandleTypeDef hdma_usart1_tx;
 
 /* USER CODE BEGIN PV */
 
@@ -47,6 +48,8 @@
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+//static void MX_DMA_Init(void);
+
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -83,8 +86,9 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
+  UART_Driver_Init();
   /* USER CODE BEGIN 2 */
-
+  uint8_t test_buff[8] = {0x0,0x1,0x2,0x3,0x4, 0x5, 0x6, 0x7};
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -92,6 +96,8 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+    HAL_Delay(500);
+    UART_Driver_TX(test_buff, sizeof(test_buff));
 
     /* USER CODE BEGIN 3 */
   }
@@ -106,6 +112,7 @@ void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+  RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
 
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
@@ -131,11 +138,29 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART1;
+  PeriphClkInit.Usart1ClockSelection = RCC_USART1CLKSOURCE_PCLK1;
+  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
+  {
+    Error_Handler();
+  }
 }
 
-/* USER CODE BEGIN 4 */
-
-/* USER CODE END 4 */
+/**
+  * Enable DMA controller clock
+  */
+//static void MX_DMA_Init(void)
+//{
+//
+//  /* DMA controller clock enable */
+//  __HAL_RCC_DMA1_CLK_ENABLE();
+//
+//  /* DMA interrupt init */
+//  /* DMA1_Ch2_3_DMA2_Ch1_2_IRQn interrupt configuration */
+//  HAL_NVIC_SetPriority(DMA1_Ch2_3_DMA2_Ch1_2_IRQn, 0, 0);
+//  HAL_NVIC_EnableIRQ(DMA1_Ch2_3_DMA2_Ch1_2_IRQn);
+//
+//}
 
 /**
   * @brief  This function is executed in case of error occurrence.

@@ -33,6 +33,7 @@
 /* USER CODE BEGIN PD */
 
 /* USER CODE END PD */
+extern DMA_HandleTypeDef hdma_usart1_tx;
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
@@ -140,6 +141,3 @@ void SysTick_Handler(void)
 /* please refer to the startup file (startup_stm32f0xx.s).                    */
 /******************************************************************************/
 
-/* USER CODE BEGIN 1 */
-
-/* USER CODE END 1 */
