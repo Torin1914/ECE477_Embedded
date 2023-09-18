@@ -1,5 +1,5 @@
 /**
- * @file Jetson_Bridge.h
+ * @file Jetson_Bridge_Defines.h
  * @author Zachary Neel (zneel@purdue.edu)
  * @brief This library handles the bridge protocol between the Jetson and the micro
  * @version 0.1
@@ -9,12 +9,10 @@
  * 
  */
 
-#ifndef JETSON_BRIDGE_H
-#define JETSON_BRIDGE_H
+#ifndef JETSON_BRIDGE_DEFINES_H
+#define JETSON_BRIDGE_DEFINES_H
 
-#include "main.h"
-
-
-void Jetson_Bridge_RxBridgeMsg(uint8_t * rx_buff, uint8_t rx_buff_size);
+#define JETSON_BRIDGE_START_BYTE 0x55
+#define JETSON_BRIDGE_MSG_ID_NAK 0xF8
 
 #endif
