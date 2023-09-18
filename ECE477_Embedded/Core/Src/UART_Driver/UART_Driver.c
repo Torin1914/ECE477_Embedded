@@ -11,15 +11,27 @@
 
 /* header file */
 #include "UART_Driver.h"
+#include "Jetson_Bridge.h"
 #include "main.h"
+
+/* for memcpy*/
+#include <string.h>
 
 /* Static Definitions */
 static UART_HandleTypeDef huart1;
 DMA_HandleTypeDef hdma_usart1_tx;
+DMA_HandleTypeDef hdma_usart1_rx;
 
 
 /* Static Functions */
+static uint8_t UART_Driver_TxBuffer[8u];
+static uint8_t UART_Driver_RxBuffer[16u];
+static uint8_t UART_Driver_RxMsg[8u];
 
+static void UART_Driver_RxMsgHandler(void)
+{
+ void;
+}
 
 /**
   * @brief UART Initialization Function
@@ -33,6 +45,9 @@ void UART_Driver_Init(void)
     __HAL_RCC_DMA1_CLK_ENABLE();
 
     /* DMA interrupt init */
+    /* DMA1_Ch1_IRQn interrupt configuration */
+    HAL_NVIC_SetPriority(DMA1_Ch1_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(DMA1_Ch1_IRQn);
     /* DMA1_Ch2_3_DMA2_Ch1_2_IRQn interrupt configuration */
     HAL_NVIC_SetPriority(DMA1_Ch2_3_DMA2_Ch1_2_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(DMA1_Ch2_3_DMA2_Ch1_2_IRQn);
@@ -58,8 +73,25 @@ void UART_Driver_Init(void)
 
 void UART_Driver_TX(uint8_t *data_buff, uint8_t buff_len)
 {
-    HAL_UART_Transmit_DMA(&huart1, data_buff, buff_len);
+  memcpy(UART_Driver_TxBuffer, data_buff, buff_len);
+  HAL_UART_Transmit_DMA(&huart1, UART_Driver_TxBuffer, sizeof(UART_Driver_TxBuffer));
 
+}
+
+void UART_Driver_RxInit(void)
+{
+  	HAL_UART_Receive_DMA (&huart1, UART_Driver_RxBuffer, sizeof(UART_Driver_RxBuffer));    /* USER CODE END WHILE */
+}
+
+void DMA1_Ch1_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA1_Ch1_IRQn 0 */
+
+  /* USER CODE END DMA1_Ch1_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_usart1_rx);
+  /* USER CODE BEGIN DMA1_Ch1_IRQn 1 */
+
+  /* USER CODE END DMA1_Ch1_IRQn 1 */
 }
 
 /**
@@ -67,13 +99,7 @@ void UART_Driver_TX(uint8_t *data_buff, uint8_t buff_len)
   */
 void DMA1_Ch2_3_DMA2_Ch1_2_IRQHandler(void)
 {
-  /* USER CODE BEGIN DMA1_Ch2_3_DMA2_Ch1_2_IRQn 0 */
-
-  /* USER CODE END DMA1_Ch2_3_DMA2_Ch1_2_IRQn 0 */
   HAL_DMA_IRQHandler(&hdma_usart1_tx);
-  /* USER CODE BEGIN DMA1_Ch2_3_DMA2_Ch1_2_IRQn 1 */
-
-  /* USER CODE END DMA1_Ch2_3_DMA2_Ch1_2_IRQn 1 */
 }
 
 /**
@@ -81,11 +107,18 @@ void DMA1_Ch2_3_DMA2_Ch1_2_IRQHandler(void)
   */
 void USART1_IRQHandler(void)
 {
-  /* USER CODE BEGIN USART1_IRQn 0 */
-
-  /* USER CODE END USART1_IRQn 0 */
   HAL_UART_IRQHandler(&huart1);
-  /* USER CODE BEGIN USART1_IRQn 1 */
+}
 
-  /* USER CODE END USART1_IRQn 1 */
+
+void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart)
+{
+  memcpy(UART_Driver_RxMsg, UART_Driver_RxBuffer, sizeof(UART_Driver_RxMsg));
+  Jetson_Bridge_RxBridgeMsg(UART_Driver_RxMsg, sizeof(UART_Driver_RxMsg));
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+  memcpy(UART_Driver_RxMsg, UART_Driver_RxBuffer + (sizeof(UART_Driver_RxBuffer) / 2), sizeof(UART_Driver_RxMsg));
+  Jetson_Bridge_RxBridgeMsg(UART_Driver_RxMsg, sizeof(UART_Driver_RxMsg));
 }

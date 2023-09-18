@@ -16,10 +16,10 @@
 #include "stm32f0xx_hal.h"
 #include "stm32f091xc.h"
 
-
 /* Function Definitions */
 void UART_Driver_Init(void);
 void UART_Driver_TX(uint8_t *data_buff, uint8_t buff_len);
+void UART_Driver_RxInit(void);
 void DMA1_Ch2_3_DMA2_Ch1_2_IRQHandler(void);
 void USART1_IRQHandler(void);
 

@@ -18,46 +18,13 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "Jetson_Bridge.h"
+#include "UART_Driver.h"
 
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
-
-/* USER CODE END Includes */
-
-/* Private typedef -----------------------------------------------------------*/
-/* USER CODE BEGIN PTD */
-
-/* USER CODE END PTD */
-
-/* Private define ------------------------------------------------------------*/
-/* USER CODE BEGIN PD */
-
-/* USER CODE END PD */
-
-/* Private macro -------------------------------------------------------------*/
-/* USER CODE BEGIN PM */
-
-/* USER CODE END PM */
-
-/* Private variables ---------------------------------------------------------*/
-//DMA_HandleTypeDef hdma_usart1_tx;
-
-/* USER CODE BEGIN PV */
-
-/* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 //static void MX_DMA_Init(void);
-
-/* USER CODE BEGIN PFP */
-
-/* USER CODE END PFP */
-
-/* Private user code ---------------------------------------------------------*/
-/* USER CODE BEGIN 0 */
-
-/* USER CODE END 0 */
 
 /**
   * @brief  The application entry point.
@@ -65,43 +32,19 @@ void SystemClock_Config(void);
   */
 int main(void)
 {
-  /* USER CODE BEGIN 1 */
-
-  /* USER CODE END 1 */
-
-  /* MCU Configuration--------------------------------------------------------*/
-
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
-
-  /* USER CODE BEGIN Init */
-
-  /* USER CODE END Init */
 
   /* Configure the system clock */
   SystemClock_Config();
 
-  /* USER CODE BEGIN SysInit */
-
-  /* USER CODE END SysInit */
-
-  /* Initialize all configured peripherals */
   UART_Driver_Init();
-  /* USER CODE BEGIN 2 */
-  uint8_t test_buff[8] = {0x0,0x1,0x2,0x3,0x4, 0x5, 0x6, 0x7};
-  /* USER CODE END 2 */
-
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
+  UART_Driver_RxInit();
   while (1)
   {
-    /* USER CODE END WHILE */
-    HAL_Delay(500);
-    UART_Driver_TX(test_buff, sizeof(test_buff));
-
-    /* USER CODE BEGIN 3 */
+    //HAL_Delay(500);
+    //UART_Driver_TX(test_buff, sizeof(test_buff));
   }
-  /* USER CODE END 3 */
 }
 
 /**
@@ -146,21 +89,6 @@ void SystemClock_Config(void)
   }
 }
 
-/**
-  * Enable DMA controller clock
-  */
-//static void MX_DMA_Init(void)
-//{
-//
-//  /* DMA controller clock enable */
-//  __HAL_RCC_DMA1_CLK_ENABLE();
-//
-//  /* DMA interrupt init */
-//  /* DMA1_Ch2_3_DMA2_Ch1_2_IRQn interrupt configuration */
-//  HAL_NVIC_SetPriority(DMA1_Ch2_3_DMA2_Ch1_2_IRQn, 0, 0);
-//  HAL_NVIC_EnableIRQ(DMA1_Ch2_3_DMA2_Ch1_2_IRQn);
-//
-//}
 
 /**
   * @brief  This function is executed in case of error occurrence.
