@@ -110,6 +110,24 @@ int main(void)
   {
 
 	  HAL_StatusTypeDef ret = HAL_I2C_IsDeviceReady(&hi2c1, 212, 1, 100);
+	  uint8_t gyro_on = 0b10000000;
+	  uint8_t accel_on = 0b10000000;
+	  HAL_I2C_Mem_Write(&hi2c1, 212, 0x11, I2C_MEMADD_SIZE_8BIT, &gyro_on, 1, HAL_MAX_DELAY);
+	  HAL_I2C_Mem_Write(&hi2c1, 212, 0x10, I2C_MEMADD_SIZE_8BIT, &accel_on, 1, HAL_MAX_DELAY);
+	  for(uint32_t i = 0; i < 500000; i++);
+	  uint8_t accelData[6];
+	  uint8_t gyroData[6];
+	  HAL_I2C_Mem_Read(&hi2c1, 212, 0x22, I2C_MEMADD_SIZE_8BIT, gyroData, 6, HAL_MAX_DELAY);
+	  HAL_I2C_Mem_Read(&hi2c1, 212, 0x28, I2C_MEMADD_SIZE_8BIT, accelData, 6, HAL_MAX_DELAY);
+
+	  int16_t gyroDataX = (int16_t)((gyroData[1] << 8) | gyroData[0]); // X-axis
+	  int16_t gyroDataY = (int16_t)((gyroData[3] << 8) | gyroData[2]); // Y-axis
+	  int16_t gyroDataZ = (int16_t)((gyroData[5] << 8) | gyroData[4]); // Z-axis
+
+	  int16_t accelDataX = (int16_t)((accelData[1] << 8) | accelData[0]); // X-axis
+	  int16_t accelDataY = (int16_t)((accelData[3] << 8) | accelData[2]); // Y-axis
+	  int16_t accelDataZ = (int16_t)((accelData[5] << 8) | accelData[4]); // Z-axis
+
 
 	  /*for(uint32_t i = 0; i < 500000; i++);
 	  TIM3->CCR1 = 1500;
