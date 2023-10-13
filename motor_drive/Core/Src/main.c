@@ -40,12 +40,17 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-I2C_HandleTypeDef hi2c1;
-DMA_HandleTypeDef hdma_i2c1_tx;
-DMA_HandleTypeDef hdma_i2c1_rx;
+I2C_HandleTypeDef hi2c2;
+DMA_HandleTypeDef hdma_i2c2_rx;
+DMA_HandleTypeDef hdma_i2c2_tx;
 
 TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
+TIM_HandleTypeDef htim6;
+
+UART_HandleTypeDef huart1;
+DMA_HandleTypeDef hdma_usart1_rx;
+DMA_HandleTypeDef hdma_usart1_tx;
 
 /* USER CODE BEGIN PV */
 
@@ -57,8 +62,11 @@ static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_TIM3_Init(void);
-static void MX_I2C1_Init(void);
+static void MX_TIM6_Init(void);
+static void MX_I2C2_Init(void);
+static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
+static uint8_t UART1_rxBuffer[8];
 
 /* USER CODE END PFP */
 
@@ -98,36 +106,28 @@ int main(void)
   MX_DMA_Init();
   MX_TIM2_Init();
   MX_TIM3_Init();
-  MX_I2C1_Init();
+  MX_TIM6_Init();
+  MX_I2C2_Init();
+  MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
+  HAL_TIM_Base_Start_IT(&htim6);
+
+  HAL_StatusTypeDef ret = HAL_I2C_IsDeviceReady(&hi2c2, 212, 1, 100);
+  uint8_t gyro_on = 0b10000000;
+  uint8_t accel_on = 0b10000000;
+  HAL_I2C_Mem_Write(&hi2c2, 212, 0x11, I2C_MEMADD_SIZE_8BIT, &gyro_on, 1, HAL_MAX_DELAY);
+  HAL_I2C_Mem_Write(&hi2c2, 212, 0x10, I2C_MEMADD_SIZE_8BIT, &accel_on, 1, HAL_MAX_DELAY);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-
-	  HAL_StatusTypeDef ret = HAL_I2C_IsDeviceReady(&hi2c1, 212, 1, 100);
-	  uint8_t gyro_on = 0b10000000;
-	  uint8_t accel_on = 0b10000000;
-	  HAL_I2C_Mem_Write(&hi2c1, 212, 0x11, I2C_MEMADD_SIZE_8BIT, &gyro_on, 1, HAL_MAX_DELAY);
-	  HAL_I2C_Mem_Write(&hi2c1, 212, 0x10, I2C_MEMADD_SIZE_8BIT, &accel_on, 1, HAL_MAX_DELAY);
-	  for(uint32_t i = 0; i < 500000; i++);
-	  uint8_t accelData[6];
-	  uint8_t gyroData[6];
-	  HAL_I2C_Mem_Read(&hi2c1, 212, 0x22, I2C_MEMADD_SIZE_8BIT, gyroData, 6, HAL_MAX_DELAY);
-	  HAL_I2C_Mem_Read(&hi2c1, 212, 0x28, I2C_MEMADD_SIZE_8BIT, accelData, 6, HAL_MAX_DELAY);
-
-	  int16_t gyroDataX = (int16_t)((gyroData[1] << 8) | gyroData[0]); // X-axis
-	  int16_t gyroDataY = (int16_t)((gyroData[3] << 8) | gyroData[2]); // Y-axis
-	  int16_t gyroDataZ = (int16_t)((gyroData[5] << 8) | gyroData[4]); // Z-axis
-
-	  int16_t accelDataX = (int16_t)((accelData[1] << 8) | accelData[0]); // X-axis
-	  int16_t accelDataY = (int16_t)((accelData[3] << 8) | accelData[2]); // Y-axis
-	  int16_t accelDataZ = (int16_t)((accelData[5] << 8) | accelData[4]); // Z-axis
-
+	  //    HAL_Delay(500);
+	  //    HAL_UART_Transmit_DMA(&huart1, test_buff, sizeof(test_buff));
+	  HAL_UART_Receive_DMA (&huart1, UART1_rxBuffer, sizeof(UART1_rxBuffer));
 
 	  /*for(uint32_t i = 0; i < 500000; i++);
 	  TIM3->CCR1 = 1500;
@@ -188,8 +188,8 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_I2C1;
-  PeriphClkInit.I2c1ClockSelection = RCC_I2C1CLKSOURCE_HSI;
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART1;
+  PeriphClkInit.Usart1ClockSelection = RCC_USART1CLKSOURCE_PCLK1;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
     Error_Handler();
@@ -197,50 +197,50 @@ void SystemClock_Config(void)
 }
 
 /**
-  * @brief I2C1 Initialization Function
+  * @brief I2C2 Initialization Function
   * @param None
   * @retval None
   */
-static void MX_I2C1_Init(void)
+static void MX_I2C2_Init(void)
 {
 
-  /* USER CODE BEGIN I2C1_Init 0 */
+  /* USER CODE BEGIN I2C2_Init 0 */
 
-  /* USER CODE END I2C1_Init 0 */
+  /* USER CODE END I2C2_Init 0 */
 
-  /* USER CODE BEGIN I2C1_Init 1 */
+  /* USER CODE BEGIN I2C2_Init 1 */
 
-  /* USER CODE END I2C1_Init 1 */
-  hi2c1.Instance = I2C1;
-  hi2c1.Init.Timing = 0x2000090E;
-  hi2c1.Init.OwnAddress1 = 0;
-  hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
-  hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
-  hi2c1.Init.OwnAddress2 = 0;
-  hi2c1.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
-  hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
-  hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
-  if (HAL_I2C_Init(&hi2c1) != HAL_OK)
+  /* USER CODE END I2C2_Init 1 */
+  hi2c2.Instance = I2C2;
+  hi2c2.Init.Timing = 0x00101D37;
+  hi2c2.Init.OwnAddress1 = 0;
+  hi2c2.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+  hi2c2.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+  hi2c2.Init.OwnAddress2 = 0;
+  hi2c2.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
+  hi2c2.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  hi2c2.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+  if (HAL_I2C_Init(&hi2c2) != HAL_OK)
   {
     Error_Handler();
   }
 
   /** Configure Analogue filter
   */
-  if (HAL_I2CEx_ConfigAnalogFilter(&hi2c1, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
+  if (HAL_I2CEx_ConfigAnalogFilter(&hi2c2, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
   {
     Error_Handler();
   }
 
   /** Configure Digital filter
   */
-  if (HAL_I2CEx_ConfigDigitalFilter(&hi2c1, 0) != HAL_OK)
+  if (HAL_I2CEx_ConfigDigitalFilter(&hi2c2, 0) != HAL_OK)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN I2C1_Init 2 */
+  /* USER CODE BEGIN I2C2_Init 2 */
 
-  /* USER CODE END I2C1_Init 2 */
+  /* USER CODE END I2C2_Init 2 */
 
 }
 
@@ -391,6 +391,79 @@ static void MX_TIM3_Init(void)
 }
 
 /**
+  * @brief TIM6 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM6_Init(void)
+{
+
+  /* USER CODE BEGIN TIM6_Init 0 */
+
+  /* USER CODE END TIM6_Init 0 */
+
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM6_Init 1 */
+
+  /* USER CODE END TIM6_Init 1 */
+  htim6.Instance = TIM6;
+  htim6.Init.Prescaler = 7;
+  htim6.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim6.Init.Period = 1947;
+  htim6.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+  if (HAL_TIM_Base_Init(&htim6) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim6, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM6_Init 2 */
+
+  /* USER CODE END TIM6_Init 2 */
+
+}
+
+/**
+  * @brief USART1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART1_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART1_Init 0 */
+
+  /* USER CODE END USART1_Init 0 */
+
+  /* USER CODE BEGIN USART1_Init 1 */
+
+  /* USER CODE END USART1_Init 1 */
+  huart1.Instance = USART1;
+  huart1.Init.BaudRate = 115200;
+  huart1.Init.WordLength = UART_WORDLENGTH_8B;
+  huart1.Init.StopBits = UART_STOPBITS_1;
+  huart1.Init.Parity = UART_PARITY_NONE;
+  huart1.Init.Mode = UART_MODE_TX_RX;
+  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+  huart1.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+  huart1.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+  if (HAL_UART_Init(&huart1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART1_Init 2 */
+
+  /* USER CODE END USART1_Init 2 */
+
+}
+
+/**
   * Enable DMA controller clock
   */
 static void MX_DMA_Init(void)
@@ -400,9 +473,15 @@ static void MX_DMA_Init(void)
   __HAL_RCC_DMA1_CLK_ENABLE();
 
   /* DMA interrupt init */
+  /* DMA1_Ch1_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Ch1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Ch1_IRQn);
   /* DMA1_Ch2_3_DMA2_Ch1_2_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Ch2_3_DMA2_Ch1_2_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA1_Ch2_3_DMA2_Ch1_2_IRQn);
+  /* DMA1_Ch4_7_DMA2_Ch3_5_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Ch4_7_DMA2_Ch3_5_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Ch4_7_DMA2_Ch3_5_IRQn);
 
 }
 
@@ -421,6 +500,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOF_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2, GPIO_PIN_RESET);
@@ -437,7 +517,65 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
+{
+	HAL_I2C_DeInit(&hi2c2);
+	HAL_I2C_Init(&hi2c2);
+	uint8_t accelData[6];
+	uint8_t gyroData[6];
+	//HAL_I2C_Mem_Read(&hi2c2, 212, 0x22, I2C_MEMADD_SIZE_8BIT, gyroData, 6, HAL_MAX_DELAY);
+	//HAL_StatusTypeDef status = HAL_I2C_Mem_Read_DMA(&hi2c2, 212, 0x22, I2C_MEMADD_SIZE_8BIT, gyroData, 6);
+	//HAL_I2C_StateTypeDef state = HAL_I2C_GetState(&hi2c2);
+	uint8_t commandByte = 0x22;
+	HAL_StatusTypeDef status1 = HAL_I2C_Master_Transmit(&hi2c2, 212, &commandByte, 1, HAL_MAX_DELAY);
+	HAL_StatusTypeDef status2 = HAL_I2C_Master_Receive_DMA(&hi2c2, 212, gyroData, sizeof(gyroData));
+	uint32_t error = HAL_I2C_GetError(&hi2c2);
+	HAL_StatusTypeDef dma_state = HAL_DMA_PollForTransfer(&hdma_i2c2_rx, HAL_DMA_FULL_TRANSFER, HAL_MAX_DELAY);
+	HAL_StatusTypeDef ret = HAL_I2C_IsDeviceReady(&hi2c2, 212, 1, 100);
 
+	HAL_I2C_DeInit(&hi2c2);
+	HAL_I2C_Init(&hi2c2);
+	ret = HAL_I2C_IsDeviceReady(&hi2c2, 212, 1, 100);
+	/*while (HAL_I2C_GetState(&hi2c2) != HAL_I2C_STATE_READY)
+	{
+	}*/
+	//HAL_I2C_Mem_Read(&hi2c2, 212, 0x28, I2C_MEMADD_SIZE_8BIT, accelData, 6, HAL_MAX_DELAY);
+	//HAL_I2C_Mem_Read_DMA(&hi2c2, 212, 0x28, I2C_MEMADD_SIZE_8BIT, accelData, 6);
+	commandByte = 0x28;
+	HAL_StatusTypeDef status3 = HAL_I2C_Master_Transmit(&hi2c2, 212, &commandByte, 1, HAL_MAX_DELAY);
+	HAL_StatusTypeDef status4 = HAL_I2C_Master_Receive_DMA(&hi2c2, 212, accelData, sizeof(accelData));
+	/*while (HAL_I2C_GetState(&hi2c2) != HAL_I2C_STATE_READY)
+	{
+	}*/
+
+	int16_t gyroDataX = (int16_t)((gyroData[1] << 8) | gyroData[0]); // X-axis
+	int16_t gyroDataY = (int16_t)((gyroData[3] << 8) | gyroData[2]); // Y-axis
+	int16_t gyroDataZ = (int16_t)((gyroData[5] << 8) | gyroData[4]); // Z-axis
+
+	int16_t accelDataX = (int16_t)((accelData[1] << 8) | accelData[0]); // X-axis
+	int16_t accelDataY = (int16_t)((accelData[3] << 8) | accelData[2]); // Y-axis
+	int16_t accelDataZ = (int16_t)((accelData[5] << 8) | accelData[4]); // Z-axis
+}
+
+void HAL_I2C_MasterRxCpltCallback(I2C_HandleTypeDef *hi2c) {
+    // Data has been received
+    // Process the data in rxBuffer (accelerometer data)
+}
+
+void HAL_I2C_MasterTxCpltCallback(I2C_HandleTypeDef *hi2c) {
+    // Data has been received
+    // Process the data in rxBuffer (accelerometer data)
+}
+
+/*void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef huart)
+{
+
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDefhuart)
+{
+
+}*/
 /* USER CODE END 4 */
 
 /**

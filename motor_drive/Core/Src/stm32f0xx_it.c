@@ -55,8 +55,13 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-extern DMA_HandleTypeDef hdma_i2c1_tx;
-extern DMA_HandleTypeDef hdma_i2c1_rx;
+extern DMA_HandleTypeDef hdma_i2c2_rx;
+extern DMA_HandleTypeDef hdma_i2c2_tx;
+extern I2C_HandleTypeDef hi2c2;
+extern TIM_HandleTypeDef htim6;
+extern DMA_HandleTypeDef hdma_usart1_rx;
+extern DMA_HandleTypeDef hdma_usart1_tx;
+extern UART_HandleTypeDef huart1;
 /* USER CODE BEGIN EV */
 
 /* USER CODE END EV */
@@ -142,6 +147,20 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
+  * @brief This function handles DMA1 channel 1 interrupt.
+  */
+void DMA1_Ch1_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA1_Ch1_IRQn 0 */
+
+  /* USER CODE END DMA1_Ch1_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_usart1_rx);
+  /* USER CODE BEGIN DMA1_Ch1_IRQn 1 */
+
+  /* USER CODE END DMA1_Ch1_IRQn 1 */
+}
+
+/**
   * @brief This function handles DMA1 channel 2 to 3 and DMA2 channel 1 to 2 interrupts.
   */
 void DMA1_Ch2_3_DMA2_Ch1_2_IRQHandler(void)
@@ -149,11 +168,71 @@ void DMA1_Ch2_3_DMA2_Ch1_2_IRQHandler(void)
   /* USER CODE BEGIN DMA1_Ch2_3_DMA2_Ch1_2_IRQn 0 */
 
   /* USER CODE END DMA1_Ch2_3_DMA2_Ch1_2_IRQn 0 */
-  HAL_DMA_IRQHandler(&hdma_i2c1_tx);
-  HAL_DMA_IRQHandler(&hdma_i2c1_rx);
+  HAL_DMA_IRQHandler(&hdma_usart1_tx);
   /* USER CODE BEGIN DMA1_Ch2_3_DMA2_Ch1_2_IRQn 1 */
 
   /* USER CODE END DMA1_Ch2_3_DMA2_Ch1_2_IRQn 1 */
+}
+
+/**
+  * @brief This function handles DMA1 channel 4 to 7 and DMA2 channel 3 to 5 interrupts.
+  */
+void DMA1_Ch4_7_DMA2_Ch3_5_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA1_Ch4_7_DMA2_Ch3_5_IRQn 0 */
+
+  /* USER CODE END DMA1_Ch4_7_DMA2_Ch3_5_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_i2c2_tx);
+  HAL_DMA_IRQHandler(&hdma_i2c2_rx);
+  /* USER CODE BEGIN DMA1_Ch4_7_DMA2_Ch3_5_IRQn 1 */
+
+  /* USER CODE END DMA1_Ch4_7_DMA2_Ch3_5_IRQn 1 */
+}
+
+/**
+  * @brief This function handles TIM6 global and DAC channel underrun error interrupts.
+  */
+void TIM6_DAC_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM6_DAC_IRQn 0 */
+
+  /* USER CODE END TIM6_DAC_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim6);
+  /* USER CODE BEGIN TIM6_DAC_IRQn 1 */
+
+  /* USER CODE END TIM6_DAC_IRQn 1 */
+}
+
+/**
+  * @brief This function handles I2C2 global interrupt.
+  */
+void I2C2_IRQHandler(void)
+{
+  /* USER CODE BEGIN I2C2_IRQn 0 */
+
+  /* USER CODE END I2C2_IRQn 0 */
+  if (hi2c2.Instance->ISR & (I2C_FLAG_BERR | I2C_FLAG_ARLO | I2C_FLAG_OVR)) {
+    HAL_I2C_ER_IRQHandler(&hi2c2);
+  } else {
+    HAL_I2C_EV_IRQHandler(&hi2c2);
+  }
+  /* USER CODE BEGIN I2C2_IRQn 1 */
+
+  /* USER CODE END I2C2_IRQn 1 */
+}
+
+/**
+  * @brief This function handles USART1 global interrupt / USART1 wake-up interrupt through EXTI line 25.
+  */
+void USART1_IRQHandler(void)
+{
+  /* USER CODE BEGIN USART1_IRQn 0 */
+
+  /* USER CODE END USART1_IRQn 0 */
+  HAL_UART_IRQHandler(&huart1);
+  /* USER CODE BEGIN USART1_IRQn 1 */
+
+  /* USER CODE END USART1_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */
