@@ -1,0 +1,3 @@
+../Core/Src/servo_proc/servo_proc.c:3:6:servo1_control	3
+../Core/Src/servo_proc/servo_proc.c:11:6:servo2_control	3
+../Core/Src/servo_proc/servo_proc.c:19:5:servo_angle	1

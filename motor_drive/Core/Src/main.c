@@ -18,6 +18,8 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "motor_proc.h"
+#include "servo_proc.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -31,7 +33,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define CW 1
+#define CCW 0
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -111,6 +114,9 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
+  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);
+  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
   HAL_TIM_Base_Start_IT(&htim6);
 
@@ -119,6 +125,9 @@ int main(void)
   uint8_t accel_on = 0b10000000;
   HAL_I2C_Mem_Write(&hi2c2, 212, 0x11, I2C_MEMADD_SIZE_8BIT, &gyro_on, 1, HAL_MAX_DELAY);
   HAL_I2C_Mem_Write(&hi2c2, 212, 0x10, I2C_MEMADD_SIZE_8BIT, &accel_on, 1, HAL_MAX_DELAY);
+
+	HAL_GPIO_WritePin(GPIOC, 0, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOC, 1, GPIO_PIN_RESET);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -127,26 +136,21 @@ int main(void)
   {
 	  //    HAL_Delay(500);
 	  //    HAL_UART_Transmit_DMA(&huart1, test_buff, sizeof(test_buff));
-	  HAL_UART_Receive_DMA (&huart1, UART1_rxBuffer, sizeof(UART1_rxBuffer));
+	  //HAL_UART_Receive_DMA (&huart1, UART1_rxBuffer, sizeof(UART1_rxBuffer));
 
-	  /*for(uint32_t i = 0; i < 500000; i++);
-	  TIM3->CCR1 = 1500;
+	  servo1_control(45);
 	  for(uint32_t i = 0; i < 500000; i++);
-	  TIM3->CCR1 = 2500;*/
+	  servo1_control(90);
+	  for(uint32_t i = 0; i < 500000; i++);
+	  servo1_control(135);
+	  for(uint32_t i = 0; i < 500000; i++);
+	  servo1_control(180);
+	  for(uint32_t i = 0; i < 500000; i++);
+	  servo1_control(90);
+	  for(uint32_t i = 0; i < 500000; i++);
+	  servo1_control(0);
+	  for(uint32_t i = 0; i < 500000; i++);
 
-	  /*HAL_GPIO_WritePin(GPIOC, 3, GPIO_PIN_SET);
-	  HAL_GPIO_WritePin(GPIOC, 2, GPIO_PIN_RESET);
-	  for(uint32_t i = 0; i < 500000; i++);
-	  TIM2->CCR1 = 90;
-	  for(uint32_t i = 0; i < 500000; i++);
-	  TIM2->CCR1 = 0;
-
-	  HAL_GPIO_WritePin(GPIOC, 3, GPIO_PIN_RESET);
-	  HAL_GPIO_WritePin(GPIOC, 2, GPIO_PIN_SET);
-	  for(uint32_t i = 0; i < 500000; i++);
-	  TIM2->CCR1 = 90;
-	  for(uint32_t i = 0; i < 500000; i++);
-	  TIM2->CCR1 = 0;*/
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -282,10 +286,6 @@ static void MX_TIM2_Init(void)
   {
     Error_Handler();
   }
-  if (HAL_TIM_OC_Init(&htim2) != HAL_OK)
-  {
-    Error_Handler();
-  }
   sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
   if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) != HAL_OK)
@@ -300,18 +300,15 @@ static void MX_TIM2_Init(void)
   {
     Error_Handler();
   }
-  sConfigOC.Pulse = 1;
   if (HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
   {
     Error_Handler();
   }
-  sConfigOC.Pulse = 0;
   if (HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_3) != HAL_OK)
   {
     Error_Handler();
   }
-  sConfigOC.OCMode = TIM_OCMODE_TIMING;
-  if (HAL_TIM_OC_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_4) != HAL_OK)
+  if (HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_4) != HAL_OK)
   {
     Error_Handler();
   }
@@ -503,14 +500,27 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3
+                          |GPIO_PIN_4|GPIO_PIN_5, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : PC0 PC1 PC2 */
-  GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2;
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4|GPIO_PIN_5, GPIO_PIN_RESET);
+
+  /*Configure GPIO pins : PC0 PC1 PC2 PC3
+                           PC4 PC5 */
+  GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3
+                          |GPIO_PIN_4|GPIO_PIN_5;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : PA4 PA5 */
+  GPIO_InitStruct.Pin = GPIO_PIN_4|GPIO_PIN_5;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
@@ -519,7 +529,7 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 {
-	HAL_I2C_DeInit(&hi2c2);
+	/*HAL_I2C_DeInit(&hi2c2);
 	HAL_I2C_Init(&hi2c2);
 	uint8_t accelData[6];
 	uint8_t gyroData[6];
@@ -536,17 +546,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 	HAL_I2C_DeInit(&hi2c2);
 	HAL_I2C_Init(&hi2c2);
 	ret = HAL_I2C_IsDeviceReady(&hi2c2, 212, 1, 100);
-	/*while (HAL_I2C_GetState(&hi2c2) != HAL_I2C_STATE_READY)
-	{
-	}*/
 	//HAL_I2C_Mem_Read(&hi2c2, 212, 0x28, I2C_MEMADD_SIZE_8BIT, accelData, 6, HAL_MAX_DELAY);
 	//HAL_I2C_Mem_Read_DMA(&hi2c2, 212, 0x28, I2C_MEMADD_SIZE_8BIT, accelData, 6);
 	commandByte = 0x28;
 	HAL_StatusTypeDef status3 = HAL_I2C_Master_Transmit(&hi2c2, 212, &commandByte, 1, HAL_MAX_DELAY);
 	HAL_StatusTypeDef status4 = HAL_I2C_Master_Receive_DMA(&hi2c2, 212, accelData, sizeof(accelData));
-	/*while (HAL_I2C_GetState(&hi2c2) != HAL_I2C_STATE_READY)
-	{
-	}*/
 
 	int16_t gyroDataX = (int16_t)((gyroData[1] << 8) | gyroData[0]); // X-axis
 	int16_t gyroDataY = (int16_t)((gyroData[3] << 8) | gyroData[2]); // Y-axis
@@ -554,7 +558,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 
 	int16_t accelDataX = (int16_t)((accelData[1] << 8) | accelData[0]); // X-axis
 	int16_t accelDataY = (int16_t)((accelData[3] << 8) | accelData[2]); // Y-axis
-	int16_t accelDataZ = (int16_t)((accelData[5] << 8) | accelData[4]); // Z-axis
+	int16_t accelDataZ = (int16_t)((accelData[5] << 8) | accelData[4]); // Z-axis*/
 }
 
 void HAL_I2C_MasterRxCpltCallback(I2C_HandleTypeDef *hi2c) {

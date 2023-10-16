@@ -1,0 +1,4 @@
+../Core/Src/motor_proc/motor_proc.c:12:6:motor1_control	3
+../Core/Src/motor_proc/motor_proc.c:36:6:motor2_control	3
+../Core/Src/motor_proc/motor_proc.c:60:6:motor3_control	3
+../Core/Src/motor_proc/motor_proc.c:84:6:motor4_control	3
