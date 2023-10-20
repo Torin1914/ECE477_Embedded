@@ -64,6 +64,15 @@ extern DMA_HandleTypeDef hdma_usart1_tx;
 extern UART_HandleTypeDef huart1;
 /* USER CODE BEGIN EV */
 
+void I2C2_EV_IRQHandler(void)
+{
+    HAL_I2C_EV_IRQHandler(&hi2c2); //I2CHandle is your I2C_HandleTypeDef object
+}
+
+void I2C2_ER_IRQHandler(void)
+{
+    HAL_I2C_ER_IRQHandler(&hi2c2);
+}
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -182,7 +191,7 @@ void DMA1_Ch4_7_DMA2_Ch3_5_IRQHandler(void)
   /* USER CODE BEGIN DMA1_Ch4_7_DMA2_Ch3_5_IRQn 0 */
 
   /* USER CODE END DMA1_Ch4_7_DMA2_Ch3_5_IRQn 0 */
-  HAL_DMA_IRQHandler(&hdma_i2c2_tx);
+  //HAL_DMA_IRQHandler(&hdma_i2c2_tx);
   HAL_DMA_IRQHandler(&hdma_i2c2_rx);
   /* USER CODE BEGIN DMA1_Ch4_7_DMA2_Ch3_5_IRQn 1 */
 
@@ -236,5 +245,4 @@ void USART1_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
-
 /* USER CODE END 1 */

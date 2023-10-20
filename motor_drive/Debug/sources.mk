@@ -22,6 +22,7 @@ C_DEPS :=
 
 # Every subdirectory with source files must be described here
 SUBDIRS := \
+Core/Src/i2c_proc \
 Core/Src \
 Core/Src/motor_proc \
 Core/Src/servo_proc \

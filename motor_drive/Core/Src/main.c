@@ -18,8 +18,6 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "motor_proc.h"
-#include "servo_proc.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -118,16 +116,14 @@ int main(void)
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
-  HAL_TIM_Base_Start_IT(&htim6);
 
-  HAL_StatusTypeDef ret = HAL_I2C_IsDeviceReady(&hi2c2, 212, 1, 100);
   uint8_t gyro_on = 0b10000000;
   uint8_t accel_on = 0b10000000;
-  HAL_I2C_Mem_Write(&hi2c2, 212, 0x11, I2C_MEMADD_SIZE_8BIT, &gyro_on, 1, HAL_MAX_DELAY);
-  HAL_I2C_Mem_Write(&hi2c2, 212, 0x10, I2C_MEMADD_SIZE_8BIT, &accel_on, 1, HAL_MAX_DELAY);
+  HAL_StatusTypeDef ret = HAL_I2C_IsDeviceReady(&hi2c2, 212, 1, 100);
+  HAL_StatusTypeDef ret1 = HAL_I2C_Mem_Write(&hi2c2, 212, 0x11, I2C_MEMADD_SIZE_8BIT, &gyro_on, 1, HAL_MAX_DELAY);
+  HAL_StatusTypeDef ret2 = HAL_I2C_Mem_Write(&hi2c2, 212, 0x10, I2C_MEMADD_SIZE_8BIT, &accel_on, 1, HAL_MAX_DELAY);
+  HAL_TIM_Base_Start_IT(&htim6);
 
-	HAL_GPIO_WritePin(GPIOC, 0, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(GPIOC, 1, GPIO_PIN_RESET);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -138,18 +134,21 @@ int main(void)
 	  //    HAL_UART_Transmit_DMA(&huart1, test_buff, sizeof(test_buff));
 	  //HAL_UART_Receive_DMA (&huart1, UART1_rxBuffer, sizeof(UART1_rxBuffer));
 
-	  servo1_control(45);
+	  //motor1_control(CW, 100);
+	  for(uint32_t i = 0; i < 107; i++)
+	  {
+		  motor1_control(CW, i);
+		  HAL_Delay(500);
+	  }
+	  /*for(uint32_t i = 0; i < 500000; i++);
+	  motor1_control(CW, 50);
 	  for(uint32_t i = 0; i < 500000; i++);
-	  servo1_control(90);
+	  motor1_control(CCW, 100);
 	  for(uint32_t i = 0; i < 500000; i++);
-	  servo1_control(135);
+	  motor1_control(CCW, 50);
 	  for(uint32_t i = 0; i < 500000; i++);
-	  servo1_control(180);
-	  for(uint32_t i = 0; i < 500000; i++);
-	  servo1_control(90);
-	  for(uint32_t i = 0; i < 500000; i++);
-	  servo1_control(0);
-	  for(uint32_t i = 0; i < 500000; i++);
+	  motor1_control(CW, 0);
+	  for(uint32_t i = 0; i < 500000; i++);*/
 
     /* USER CODE END WHILE */
 
@@ -529,6 +528,7 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 {
+	//getGyroData(hi2c2);
 	/*HAL_I2C_DeInit(&hi2c2);
 	HAL_I2C_Init(&hi2c2);
 	uint8_t accelData[6];

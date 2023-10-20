@@ -13,6 +13,7 @@ RM := rm -rf
 -include Core/Startup/subdir.mk
 -include Core/Src/servo_proc/subdir.mk
 -include Core/Src/motor_proc/subdir.mk
+-include Core/Src/i2c_proc/subdir.mk
 -include Core/Src/subdir.mk
 -include objects.mk
 
