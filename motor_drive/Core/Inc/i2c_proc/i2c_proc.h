@@ -4,6 +4,6 @@
 #include "stm32f0xx_hal.h"
 
 void getGyroData(I2C_HandleTypeDef);
-void getAccelData(I2C_HandleTypeDef*);
+void getAccelData(I2C_HandleTypeDef);
 
 #endif

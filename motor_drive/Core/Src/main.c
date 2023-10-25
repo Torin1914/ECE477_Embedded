@@ -135,11 +135,11 @@ int main(void)
 	  //HAL_UART_Receive_DMA (&huart1, UART1_rxBuffer, sizeof(UART1_rxBuffer));
 
 	  //motor1_control(CW, 100);
-	  for(uint32_t i = 0; i < 107; i++)
+	  /*for(uint32_t i = 0; i < 107; i++)
 	  {
 		  motor1_control(CW, i);
 		  HAL_Delay(500);
-	  }
+	  }*/
 	  /*for(uint32_t i = 0; i < 500000; i++);
 	  motor1_control(CW, 50);
 	  for(uint32_t i = 0; i < 500000; i++);
@@ -528,7 +528,7 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 {
-	//getGyroData(hi2c2);
+	getAccelData(hi2c2);
 	/*HAL_I2C_DeInit(&hi2c2);
 	HAL_I2C_Init(&hi2c2);
 	uint8_t accelData[6];
