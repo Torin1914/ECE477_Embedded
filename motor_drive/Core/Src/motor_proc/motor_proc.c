@@ -9,7 +9,39 @@
 #define M4IN1 0b10000
 #define M4IN2 0b100000
 
-void motor1_control(int direction, int speed)
+//MOTOR 1 & 2 are RIGHT MOTORS
+//MOTOR 2 & 4 are BACK MOTORS
+
+#define CW 1
+#define CCW 0
+
+void move_robot(uint8_t forward_effort, uint8_t turning_effort)
+{
+	uint8_t direction = CW;
+	if(forward_effort  < 0)
+	{
+		direction = CCW;
+	}
+
+	if(turning_effort <= 0)
+	{
+		motor1_control(direction, forward_effort);
+		motor2_control(direction, forward_effort);
+		motor3_control(direction, forward_effort - turning_effort);
+		motor4_control(direction, forward_effort - turning_effort);
+	}
+	else
+	{
+		motor1_control(direction, forward_effort - turning_effort);
+		motor2_control(direction, forward_effort - turning_effort);
+		motor3_control(direction, forward_effort);
+		motor4_control(direction, forward_effort);
+	}
+
+	return;
+}
+
+void motor1_control(uint8_t direction, uint8_t speed)
 {
 	if(!speed)
 	{
@@ -33,7 +65,7 @@ void motor1_control(int direction, int speed)
 	return;
 }
 
-void motor2_control(int direction, int speed)
+void motor2_control(uint8_t direction, uint8_t speed)
 {
 	if(!speed)
 	{
@@ -57,7 +89,7 @@ void motor2_control(int direction, int speed)
 	return;
 }
 
-void motor3_control(int direction, int speed)
+void motor3_control(uint8_t direction, uint8_t speed)
 {
 	if(!speed)
 	{
@@ -81,7 +113,7 @@ void motor3_control(int direction, int speed)
 	return;
 }
 
-void motor4_control(int direction, int speed)
+void motor4_control(uint8_t direction, uint8_t speed)
 {
 	if(!speed)
 	{

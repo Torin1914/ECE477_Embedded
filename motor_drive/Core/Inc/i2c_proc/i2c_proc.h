@@ -3,7 +3,7 @@
 
 #include "stm32f0xx_hal.h"
 
-void getGyroData(I2C_HandleTypeDef);
-void getAccelData(I2C_HandleTypeDef);
+void getGyroData(I2C_HandleTypeDef, float*, float*, float*);
+void getAccelData(I2C_HandleTypeDef, float*, float*, float*, float*, float*, float*);
 
 #endif

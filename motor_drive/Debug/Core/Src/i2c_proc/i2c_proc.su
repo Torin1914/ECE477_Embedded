@@ -1,2 +1,2 @@
-../Core/Src/i2c_proc/i2c_proc.c:10:6:getGyroData	64	static
-../Core/Src/i2c_proc/i2c_proc.c:50:6:getAccelData	64	static
+../Core/Src/i2c_proc/i2c_proc.c:13:6:getGyroData	72	static
+../Core/Src/i2c_proc/i2c_proc.c:57:6:getAccelData	72	static
