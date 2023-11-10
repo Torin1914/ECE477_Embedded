@@ -9,13 +9,13 @@
 #define M4IN1 0b10000
 #define M4IN2 0b100000
 
-//MOTOR 1 & 2 are RIGHT MOTORS
+//MOTOR 1 & 2 are LEFT MOTORS
 //MOTOR 2 & 4 are BACK MOTORS
 
 #define CW 1
 #define CCW 0
 
-void move_robot(uint8_t forward_effort, uint8_t turning_effort)
+void move_robot(int8_t forward_effort, int8_t turning_effort) //TURNING EFFORT CANNOT BE GREATER THAN FORWARD EFFORT
 {
 	uint8_t direction = CW;
 	if(forward_effort  < 0)
@@ -27,13 +27,13 @@ void move_robot(uint8_t forward_effort, uint8_t turning_effort)
 	{
 		motor1_control(direction, forward_effort);
 		motor2_control(direction, forward_effort);
-		motor3_control(direction, forward_effort - turning_effort);
-		motor4_control(direction, forward_effort - turning_effort);
+		motor3_control(direction, forward_effort + (turning_effort * forward_effort / 100));
+		motor4_control(direction, forward_effort + (turning_effort * forward_effort / 100));
 	}
 	else
 	{
-		motor1_control(direction, forward_effort - turning_effort);
-		motor2_control(direction, forward_effort - turning_effort);
+		motor1_control(direction, forward_effort - (turning_effort * forward_effort / 100));
+		motor2_control(direction, forward_effort - (turning_effort * forward_effort / 100));
 		motor3_control(direction, forward_effort);
 		motor4_control(direction, forward_effort);
 	}
@@ -41,7 +41,7 @@ void move_robot(uint8_t forward_effort, uint8_t turning_effort)
 	return;
 }
 
-void motor1_control(uint8_t direction, uint8_t speed)
+void motor1_control(int8_t direction, int8_t speed)
 {
 	if(!speed)
 	{
@@ -49,7 +49,7 @@ void motor1_control(uint8_t direction, uint8_t speed)
 		return;
 	}
 
-	if(direction)
+	if(!direction)
 	{
 		HAL_GPIO_WritePin(GPIOC, M1IN1, GPIO_PIN_SET);
 		HAL_GPIO_WritePin(GPIOC, M1IN2, GPIO_PIN_RESET);
@@ -65,7 +65,7 @@ void motor1_control(uint8_t direction, uint8_t speed)
 	return;
 }
 
-void motor2_control(uint8_t direction, uint8_t speed)
+void motor2_control(int8_t direction, int8_t speed)
 {
 	if(!speed)
 	{
@@ -89,7 +89,7 @@ void motor2_control(uint8_t direction, uint8_t speed)
 	return;
 }
 
-void motor3_control(uint8_t direction, uint8_t speed)
+void motor3_control(int8_t direction, int8_t speed)
 {
 	if(!speed)
 	{
@@ -97,7 +97,7 @@ void motor3_control(uint8_t direction, uint8_t speed)
 		return;
 	}
 
-	if(direction)
+	if(!direction)
 	{
 		HAL_GPIO_WritePin(GPIOA, M3IN1, GPIO_PIN_SET);
 		HAL_GPIO_WritePin(GPIOA, M3IN2, GPIO_PIN_RESET);
@@ -113,7 +113,7 @@ void motor3_control(uint8_t direction, uint8_t speed)
 	return;
 }
 
-void motor4_control(uint8_t direction, uint8_t speed)
+void motor4_control(int8_t direction, int8_t speed)
 {
 	if(!speed)
 	{
@@ -121,7 +121,7 @@ void motor4_control(uint8_t direction, uint8_t speed)
 		return;
 	}
 
-	if(direction)
+	if(!direction)
 	{
 		HAL_GPIO_WritePin(GPIOC, M4IN1, GPIO_PIN_SET);
 		HAL_GPIO_WritePin(GPIOC, M4IN2, GPIO_PIN_RESET);
