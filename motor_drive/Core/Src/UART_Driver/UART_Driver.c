@@ -27,7 +27,6 @@ void UART_Driver_TX(uint8_t *data_buff, uint8_t buff_len)
 {
   memcpy(UART_Driver_TxBuffer, data_buff, buff_len);
   HAL_UART_Transmit_DMA(&huart1, UART_Driver_TxBuffer, sizeof(UART_Driver_TxBuffer));
-
 }
 
 void UART_Driver_RxInit(void)
@@ -38,11 +37,11 @@ void UART_Driver_RxInit(void)
 void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart)
 {
   memcpy(UART_Driver_RxMsg, UART_Driver_RxBuffer, sizeof(UART_Driver_RxMsg));
-  Jetson_Bridge_RxBridgeMsg(UART_Driver_RxMsg, sizeof(UART_Driver_RxMsg));
+  (void) Jetson_Bridge_RxBridgeMsg(UART_Driver_RxMsg, sizeof(UART_Driver_RxMsg));
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
   memcpy(UART_Driver_RxMsg, UART_Driver_RxBuffer + (sizeof(UART_Driver_RxBuffer) / 2), sizeof(UART_Driver_RxMsg));
-  Jetson_Bridge_RxBridgeMsg(UART_Driver_RxMsg, sizeof(UART_Driver_RxMsg));
+  (void) Jetson_Bridge_RxBridgeMsg(UART_Driver_RxMsg, sizeof(UART_Driver_RxMsg));
 }

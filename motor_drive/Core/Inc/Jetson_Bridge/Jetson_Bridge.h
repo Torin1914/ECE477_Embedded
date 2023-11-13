@@ -15,6 +15,6 @@
 #include "main.h"
 
 
-void Jetson_Bridge_RxBridgeMsg(uint8_t * rx_buff, uint8_t rx_buff_size);
+unint32_t Jetson_Bridge_RxBridgeMsg(uint8_t * rx_buff, uint8_t rx_buff_size);
 
 #endif

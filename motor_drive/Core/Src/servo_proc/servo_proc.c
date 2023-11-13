@@ -20,3 +20,19 @@ int servo_angle(int angle)
 {
 	return (angle * (1000.0 / 90) + 500);
 }
+
+/**
+ * @brief function called to grab the ball
+ * 
+ */
+ void servo_proc_GrabBall(void)
+ {
+	  HAL_Delay(1000);
+	  servo1_control(120);
+	  servo2_control(50);
+	  HAL_Delay(1000);
+	  servo1_control(160);
+
+	  HAL_Delay(150);
+	  servo2_control(120);
+ }

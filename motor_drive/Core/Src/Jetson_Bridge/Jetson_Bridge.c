@@ -35,7 +35,7 @@ void Jetson_Bridge_TxMsg(Jetson_Bridge_Msg_T tx_msg)
 
 
 
-void Jetson_Bridge_RxBridgeMsg(uint8_t * rx_buff, uint8_t rx_buff_size)
+uint32_t Jetson_Bridge_RxBridgeMsg(uint8_t * rx_buff, uint8_t rx_buff_size)
 {
     Jetson_Bridge_Msg_T rx_msg;
     rx_msg.start_byte = rx_buff[0];
@@ -54,6 +54,24 @@ void Jetson_Bridge_RxBridgeMsg(uint8_t * rx_buff, uint8_t rx_buff_size)
         tx_nak.data[3u] = 0u;
         tx_nak.crc = Jetson_Bridge_getCRC(tx_nak);
         Jetson_Bridge_TxMsg(tx_nak);
+
+        return JETSON_BRIDGE_EXIT_FAILED;
+
+    }
+
+    switch(rx_msg.msg_id)
+    {
+        case JETSON_BRIDGE_MSG_ID_MOTOR:
+            break;
+        case JETSON_BRIDGE_MSG_ID_SERVO:
+            break;
+        case JETSON_BRIDGE_MSG_ID_IMUREQ:
+            break:
+        default:
+            return JETSON_BRIDGE_EXIT_FAILED;
+
     }
     (void) rx_buff;
+
+    return JETSON_BRIDGE_EXIT_SUCCESS;
 }
