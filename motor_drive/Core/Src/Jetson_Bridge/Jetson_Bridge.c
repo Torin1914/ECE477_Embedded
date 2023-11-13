@@ -14,6 +14,7 @@
 #include "Jetson_Bridge_Defines.h"
 #include "Jetson_Bridge_Types.h"
 #include "UART_Driver.h"
+#include "servo_proc.h"
 
 /* for memcpy*/
 #include <string.h>
@@ -21,6 +22,15 @@
 static uint16_t Jetson_Bridge_getCRC(Jetson_Bridge_Msg_T msg)
 {
     return 0u;
+}
+
+static uint16_t Jetson_Bridge_TxGyro()
+{
+    Jetson_Bridge_Msg_T gyro_x;
+    Jetson_Bridge_Msg_T gyro_x;
+    Jetson_Bridge_Msg_T gyro_x;
+
+    
 }
 
 void Jetson_Bridge_TxMsg(Jetson_Bridge_Msg_T tx_msg)
@@ -32,7 +42,6 @@ void Jetson_Bridge_TxMsg(Jetson_Bridge_Msg_T tx_msg)
     memcpy(&buff[6], &tx_msg.crc, sizeof(tx_msg.crc));
     UART_Driver_TX(buff, sizeof(buff));
 }
-
 
 
 uint32_t Jetson_Bridge_RxBridgeMsg(uint8_t * rx_buff, uint8_t rx_buff_size)
@@ -47,13 +56,13 @@ uint32_t Jetson_Bridge_RxBridgeMsg(uint8_t * rx_buff, uint8_t rx_buff_size)
     {
         Jetson_Bridge_Msg_T tx_nak;
         tx_nak.start_byte = JETSON_BRIDGE_START_BYTE;
-        tx_nak.msg_id = JETSON_BRIDGE_MSG_ID_NAK;
+        tx_nak.msg_id = JETSON_BRIDGE_MSG_ID_NAK_INVALIDSTART;
         tx_nak.data[0u] = 0u;
         tx_nak.data[1u] = 0u;
         tx_nak.data[2u] = 0u;
         tx_nak.data[3u] = 0u;
         tx_nak.crc = Jetson_Bridge_getCRC(tx_nak);
-        Jetson_Bridge_TxMsg(tx_nak);
+        Jetson_Bridge_TxMsgNak();
 
         return JETSON_BRIDGE_EXIT_FAILED;
 
@@ -62,10 +71,15 @@ uint32_t Jetson_Bridge_RxBridgeMsg(uint8_t * rx_buff, uint8_t rx_buff_size)
     switch(rx_msg.msg_id)
     {
         case JETSON_BRIDGE_MSG_ID_MOTOR:
+            move_robot(((int8_t) rx_msg.data[0]) - 100, ((int8_t) rx_msg.data[1]) - 100);
             break;
         case JETSON_BRIDGE_MSG_ID_SERVO:
+            servo_proc_GrabBall(rx_msg.data[0]);
             break;
-        case JETSON_BRIDGE_MSG_ID_IMUREQ:
+        case JETSON_BRIDGE_MSG_ID_IMUGYROREQ:
+            Jetson_Bridge_TxGyro();
+            break;
+        case JETSON_BRIDGE_MSG_ID_IMUACCELREQ:
             break;
         default:
             return JETSON_BRIDGE_EXIT_FAILED;

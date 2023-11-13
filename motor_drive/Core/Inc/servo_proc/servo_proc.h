@@ -6,6 +6,6 @@
 void servo1_control(int);
 void servo2_control(int);
 int servo_angle(int);
-void servo_proc_GrabBall(void);
+void servo_proc_GrabBall(uint8_t close);
 
 #endif

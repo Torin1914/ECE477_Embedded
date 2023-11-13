@@ -10,7 +10,19 @@
 #define ACCELX_ADJ .242
 #define ACCELY_ADJ .0022
 
-void getGyroData(I2C_HandleTypeDef hi2c2, float* angx, float* angy, float* angz)
+static float angle_x;
+static float angle_y;
+static float angle_z;
+
+static float pos_x;
+static float pos_y;
+static float pos_z;
+
+static float vel_x;
+static float vel_y;
+static float vel_z;
+
+void getGyroData(I2C_HandleTypeDef hi2c2)
 {
 	uint8_t gyroData[6];
 	HAL_StatusTypeDef ret = HAL_I2C_Mem_Read(&hi2c2, 212, 0x22, I2C_MEMADD_SIZE_8BIT, gyroData, 6, HAL_MAX_DELAY);
@@ -24,14 +36,15 @@ void getGyroData(I2C_HandleTypeDef hi2c2, float* angx, float* angy, float* angz)
 	float gyroY = gyro[1] * G_SENSITIVITY / 1000;
 	float gyroZ = gyro[2] * G_SENSITIVITY / 1000; //deg/sec
 
-	*angx = *angx + (gyroX * 1.0 / 60.0);
-	*angy = *angy + (gyroY * 1.0 / 60.0);
-	*angz = *angz + (gyroZ * 1.0 / 60.0);
+	//integration of gyro to get approx angle since reset
+	angle_x = angle_x + (gyroX * 1.0 / 60.0); 
+	angle_y = angle_y + (gyroY * 1.0 / 60.0);
+	angle_z = angle_z + (gyroZ * 1.0 / 60.0);
 
 	return;
 }
 
-void getAccelData(I2C_HandleTypeDef hi2c2, float* v0x, float* v0y, float* v0z, float* posx, float* posy, float* posz)
+void getAccelData(I2C_HandleTypeDef hi2c2)
 {
 	uint8_t accelData[6];
 	HAL_I2C_Mem_Read(&hi2c2, IMU_ADDRESS, ACCEL_ADDRESS, I2C_MEMADD_SIZE_8BIT, accelData, 6, HAL_MAX_DELAY);
@@ -45,13 +58,13 @@ void getAccelData(I2C_HandleTypeDef hi2c2, float* v0x, float* v0y, float* v0z, f
 	float accelY = (accel[1] * A_SENSITIVITY / 1000 * 9.81) - ACCELY_ADJ;
 	float accelZ = accel[2] * A_SENSITIVITY / 1000 * 9.81; //m/s2
 
-	*posx = *posx + (*v0x * (1.0/60)) + ((accelX * (1.0/60) * (1.0/60)) / 2.0);
-	*posy = *posy + (*v0y * (1.0/60)) + ((accelY * (1.0/60) * (1.0/60)) / 2.0);
-	*posz = *posz + (*v0z * (1.0/60)) + ((accelZ * (1.0/60) * (1.0/60)) / 2.0);
+	vel_x = vel_x + accelX * (1.0/60);
+	vel_y = vel_y + accelY * (1.0/60);
+	vel_z = vel_z + accelZ * (1.0/60);
 
-	*v0x = *v0x + accelX * (1.0/60);
-	*v0y = *v0y + accelY * (1.0/60);
-	*v0z = *v0z + accelZ * (1.0/60);
+	pos_x = pos_x + (vel_x * (1.0/60)) + ((accelX * (1.0/60) * (1.0/60)) / 2.0);
+	pos_y = pos_y + (vel_y * (1.0/60)) + ((accelY * (1.0/60) * (1.0/60)) / 2.0);
+	pos_z = pos_z + (vel_z * (1.0/60)) + ((accelZ * (1.0/60) * (1.0/60)) / 2.0);
 
 	return;
 }
