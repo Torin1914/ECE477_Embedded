@@ -18,7 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-
+#include "UART_Driver.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -42,8 +42,6 @@
 
 /* Private variables ---------------------------------------------------------*/
 I2C_HandleTypeDef hi2c2;
-DMA_HandleTypeDef hdma_i2c2_rx;
-DMA_HandleTypeDef hdma_i2c2_tx;
 
 TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
@@ -54,16 +52,6 @@ DMA_HandleTypeDef hdma_usart1_rx;
 DMA_HandleTypeDef hdma_usart1_tx;
 
 /* USER CODE BEGIN PV */
-
-float v0x = 0;
-float v0y = 0;
-float v0z = 0;
-float posx = 0;
-float posy = 0;
-float posz = 0;
-float angx = 0;
-float angy = 0;
-float angz = 0;
 
 /* USER CODE END PV */
 
@@ -77,7 +65,7 @@ static void MX_TIM6_Init(void);
 static void MX_I2C2_Init(void);
 static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
-static uint8_t UART1_rxBuffer[8];
+static uint8_t Test_buff[8] = "01234567";
 
 /* USER CODE END PFP */
 
@@ -120,6 +108,9 @@ int main(void)
   MX_TIM6_Init();
   MX_I2C2_Init();
   MX_USART1_UART_Init();
+
+  UART_Driver_RxInit();
+
   /* USER CODE BEGIN 2 */
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
@@ -129,8 +120,7 @@ int main(void)
 
   uint8_t gyro_on = 0b10000000;
   uint8_t accel_on = 0b10000000;
-  HAL_StatusTypeDef ret = HAL_I2C_IsDeviceReady(&hi2c2, 0b1101010, 1, 100);
-  uint32_t error2 = HAL_I2C_GetError(&hi2c2);
+  HAL_StatusTypeDef ret = HAL_I2C_IsDeviceReady(&hi2c2, 212, 1, 100);
   HAL_StatusTypeDef ret1 = HAL_I2C_Mem_Write(&hi2c2, 212, 0x11, I2C_MEMADD_SIZE_8BIT, &gyro_on, 1, HAL_MAX_DELAY);
   HAL_StatusTypeDef ret2 = HAL_I2C_Mem_Write(&hi2c2, 212, 0x10, I2C_MEMADD_SIZE_8BIT, &accel_on, 1, HAL_MAX_DELAY);
   //HAL_TIM_Base_Start_IT(&htim6);
@@ -145,8 +135,7 @@ int main(void)
 	  //    HAL_UART_Transmit_DMA(&huart1, test_buff, sizeof(test_buff));
 	  //HAL_UART_Receive_DMA (&huart1, UART1_rxBuffer, sizeof(UART1_rxBuffer));
 
-	  //motor3_control(CW, 100);
-	  //motor4_control(CW, 100);
+	  //motor1_control(CW, 100);
 	  /*for(uint32_t i = 0; i < 107; i++)
 	  {
 		  motor1_control(CW, i);
@@ -161,7 +150,7 @@ int main(void)
 	  for(uint32_t i = 0; i < 500000; i++);
 	  motor1_control(CW, 0);
 	  for(uint32_t i = 0; i < 500000; i++);*/
-
+	  UART_Driver_TX(Test_buff, sizeof(Test_buff));
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -368,6 +357,10 @@ static void MX_TIM3_Init(void)
   {
     Error_Handler();
   }
+  if (HAL_TIM_OC_Init(&htim3) != HAL_OK)
+  {
+    Error_Handler();
+  }
   sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
   if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
@@ -382,7 +375,8 @@ static void MX_TIM3_Init(void)
   {
     Error_Handler();
   }
-  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
+  sConfigOC.OCMode = TIM_OCMODE_TIMING;
+  if (HAL_TIM_OC_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
   {
     Error_Handler();
   }
@@ -482,9 +476,6 @@ static void MX_DMA_Init(void)
   /* DMA1_Ch2_3_DMA2_Ch1_2_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Ch2_3_DMA2_Ch1_2_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA1_Ch2_3_DMA2_Ch1_2_IRQn);
-  /* DMA1_Ch4_7_DMA2_Ch3_5_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Ch4_7_DMA2_Ch3_5_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(DMA1_Ch4_7_DMA2_Ch3_5_IRQn);
 
 }
 
@@ -535,8 +526,7 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 {
-	getGyroData(hi2c2, &angx, &angy, &angz);
-	getAccelData(hi2c2, &v0x, &v0y, &v0z, &posx, &posy, &posz);
+	getAccelData(hi2c2);
 	/*HAL_I2C_DeInit(&hi2c2);
 	HAL_I2C_Init(&hi2c2);
 	uint8_t accelData[6];

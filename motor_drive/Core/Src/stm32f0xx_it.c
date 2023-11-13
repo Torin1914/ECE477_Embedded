@@ -55,8 +55,6 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-extern DMA_HandleTypeDef hdma_i2c2_rx;
-extern DMA_HandleTypeDef hdma_i2c2_tx;
 extern I2C_HandleTypeDef hi2c2;
 extern TIM_HandleTypeDef htim6;
 extern DMA_HandleTypeDef hdma_usart1_rx;
@@ -181,21 +179,6 @@ void DMA1_Ch2_3_DMA2_Ch1_2_IRQHandler(void)
   /* USER CODE BEGIN DMA1_Ch2_3_DMA2_Ch1_2_IRQn 1 */
 
   /* USER CODE END DMA1_Ch2_3_DMA2_Ch1_2_IRQn 1 */
-}
-
-/**
-  * @brief This function handles DMA1 channel 4 to 7 and DMA2 channel 3 to 5 interrupts.
-  */
-void DMA1_Ch4_7_DMA2_Ch3_5_IRQHandler(void)
-{
-  /* USER CODE BEGIN DMA1_Ch4_7_DMA2_Ch3_5_IRQn 0 */
-
-  /* USER CODE END DMA1_Ch4_7_DMA2_Ch3_5_IRQn 0 */
-  HAL_DMA_IRQHandler(&hdma_i2c2_tx);
-  HAL_DMA_IRQHandler(&hdma_i2c2_rx);
-  /* USER CODE BEGIN DMA1_Ch4_7_DMA2_Ch3_5_IRQn 1 */
-
-  /* USER CODE END DMA1_Ch4_7_DMA2_Ch3_5_IRQn 1 */
 }
 
 /**
