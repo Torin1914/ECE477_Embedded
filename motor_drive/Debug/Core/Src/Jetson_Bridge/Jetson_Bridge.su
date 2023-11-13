@@ -1,0 +1,3 @@
+../Core/Src/Jetson_Bridge/Jetson_Bridge.c:21:17:Jetson_Bridge_getCRC	16	static
+../Core/Src/Jetson_Bridge/Jetson_Bridge.c:26:6:Jetson_Bridge_TxMsg	32	static
+../Core/Src/Jetson_Bridge/Jetson_Bridge.c:38:6:Jetson_Bridge_RxBridgeMsg	40	static

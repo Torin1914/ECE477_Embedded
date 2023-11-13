@@ -1,0 +1,4 @@
+../Core/Src/UART_Driver/UART_Driver.c:26:6:UART_Driver_TX	16	static
+../Core/Src/UART_Driver/UART_Driver.c:33:6:UART_Driver_RxInit	8	static
+../Core/Src/UART_Driver/UART_Driver.c:38:6:HAL_UART_RxHalfCpltCallback	16	static
+../Core/Src/UART_Driver/UART_Driver.c:44:6:HAL_UART_RxCpltCallback	16	static

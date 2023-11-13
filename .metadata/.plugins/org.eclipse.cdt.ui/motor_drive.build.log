@@ -1,0 +1,17 @@
+10:58:28 **** Incremental Build of configuration Debug for project motor_drive ****
+make -j20 all 
+arm-none-eabi-gcc "../Core/Src/stm32f0xx_it.c" -mcpu=cortex-m0 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F091xC -c -I../Core/Inc -I../Drivers/STM32F0xx_HAL_Driver/Inc -I../Drivers/STM32F0xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F0xx/Include -I../Drivers/CMSIS/Include -I"C:/ECE477_Embedded/motor_drive/Core/Inc/motor_proc" -I"C:/ECE477_Embedded/motor_drive/Core/Inc/servo_proc" -I"C:/ECE477_Embedded/motor_drive/Core/Inc/i2c_proc" -I"C:/ECE477_Embedded/motor_drive/Core/Src/i2c_proc" -I"C:/ECE477_Embedded/motor_drive/Core/Inc/Jetson_Bridge" -I"C:/ECE477_Embedded/motor_drive/Core/Inc/UART_Driver" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/stm32f0xx_it.d" -MT"Core/Src/stm32f0xx_it.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/stm32f0xx_it.o"
+arm-none-eabi-gcc -o "motor_drive.elf" @"objects.list"   -mcpu=cortex-m0 -T"C:\ECE477_Embedded\motor_drive\STM32F091RCTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="motor_drive.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: motor_drive.elf
+ 
+arm-none-eabi-size   motor_drive.elf 
+arm-none-eabi-objdump -h -S  motor_drive.elf  > "motor_drive.list"
+   text	   data	    bss	    dec	    hex	filename
+  32808	     20	   2316	  35144	   8948	motor_drive.elf
+Finished building: default.size.stdout
+ 
+Finished building: motor_drive.list
+ 
+
+10:58:29 Build Finished. 0 errors, 0 warnings. (took 810ms)
+
