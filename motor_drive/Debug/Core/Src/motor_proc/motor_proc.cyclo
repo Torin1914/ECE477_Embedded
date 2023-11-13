@@ -1,5 +1,0 @@
-../Core/Src/motor_proc/motor_proc.c:18:6:move_robot	3
-../Core/Src/motor_proc/motor_proc.c:44:6:motor1_control	3
-../Core/Src/motor_proc/motor_proc.c:68:6:motor2_control	3
-../Core/Src/motor_proc/motor_proc.c:92:6:motor3_control	3
-../Core/Src/motor_proc/motor_proc.c:116:6:motor4_control	3

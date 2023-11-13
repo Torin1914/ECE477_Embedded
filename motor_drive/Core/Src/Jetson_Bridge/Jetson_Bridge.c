@@ -66,7 +66,7 @@ uint32_t Jetson_Bridge_RxBridgeMsg(uint8_t * rx_buff, uint8_t rx_buff_size)
         case JETSON_BRIDGE_MSG_ID_SERVO:
             break;
         case JETSON_BRIDGE_MSG_ID_IMUREQ:
-            break:
+            break;
         default:
             return JETSON_BRIDGE_EXIT_FAILED;
 
