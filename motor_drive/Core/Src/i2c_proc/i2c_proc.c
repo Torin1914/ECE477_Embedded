@@ -1,5 +1,5 @@
 #include "i2c_proc.h"
-
+#include "motor_proc.h"
 #define IMU_ADDRESS 212
 #define GYRO_ADDRESS 0x22
 #define ACCEL_ADDRESS 0x28
@@ -22,7 +22,7 @@ static float vel_x;
 static float vel_y;
 static float vel_z;
 
-void getGyroData(I2C_HandleTypeDef hi2c2)
+void i2c_proc_updateGyroData(I2C_HandleTypeDef hi2c2)
 {
 	uint8_t gyroData[6];
 	HAL_StatusTypeDef ret = HAL_I2C_Mem_Read(&hi2c2, 212, 0x22, I2C_MEMADD_SIZE_8BIT, gyroData, 6, HAL_MAX_DELAY);
@@ -37,14 +37,14 @@ void getGyroData(I2C_HandleTypeDef hi2c2)
 	float gyroZ = gyro[2] * G_SENSITIVITY / 1000; //deg/sec
 
 	//integration of gyro to get approx angle since reset
-	angle_x = angle_x + (gyroX * 1.0 / 60.0); 
+	angle_x = angle_x + (gyroX * 1.0 / 60.0);
 	angle_y = angle_y + (gyroY * 1.0 / 60.0);
 	angle_z = angle_z + (gyroZ * 1.0 / 60.0);
 
 	return;
 }
 
-void getAccelData(I2C_HandleTypeDef hi2c2)
+void i2c_proc_updateAccelData(I2C_HandleTypeDef hi2c2)
 {
 	uint8_t accelData[6];
 	HAL_I2C_Mem_Read(&hi2c2, IMU_ADDRESS, ACCEL_ADDRESS, I2C_MEMADD_SIZE_8BIT, accelData, 6, HAL_MAX_DELAY);
@@ -67,4 +67,34 @@ void getAccelData(I2C_HandleTypeDef hi2c2)
 	pos_z = pos_z + (vel_z * (1.0/60)) + ((accelZ * (1.0/60) * (1.0/60)) / 2.0);
 
 	return;
+}
+
+float i2c_proc_getAngleX()
+{
+	return angle_x;
+}
+
+float i2c_proc_getAngleY()
+{
+	return angle_y;
+}
+
+float i2c_proc_getAngleZ()
+{
+	return angle_y;
+}
+
+float i2c_proc_getAccelX()
+{
+	return pos_x;
+}
+
+float i2c_proc_getAccelY()
+{
+	return pos_y;
+}
+
+float i2c_proc_getAccelZ()
+{
+	return pos_z;
 }

@@ -19,6 +19,10 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "UART_Driver.h"
+#include "i2c_proc.h"
+#include "motor_proc.h"
+#include "Jetson_Bridge.h"
+#include "UART_Driver_Defines.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -100,6 +104,8 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
+  char dummy[] = "012345678";
+
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_TIM2_Init();
@@ -125,17 +131,17 @@ int main(void)
   HAL_StatusTypeDef ret1 = HAL_I2C_Mem_Write(&hi2c2, 212, 0x11, I2C_MEMADD_SIZE_8BIT, &gyro_on, 1, HAL_MAX_DELAY);
   HAL_StatusTypeDef ret2 = HAL_I2C_Mem_Write(&hi2c2, 212, 0x10, I2C_MEMADD_SIZE_8BIT, &accel_on, 1, HAL_MAX_DELAY);
   HAL_TIM_Base_Start_IT(&htim6);
-  HAL_Delay(500);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	    //Jetson_Bridge_TxGyro();
+	    //Jetson_Bridge_TxGyro();
+	    //Jetson_Bridge_TxGyro();
 
-	  HAL_Delay(1000);
-
-
+	  //for(int i = 0; i < 5000000; i++);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -506,28 +512,10 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 {
-	getAccelData(hi2c2);
+	i2c_proc_updateAccelData(hi2c2);
+	i2c_proc_updateGyroData(hi2c2);
+  Jetson_Bridge_TxGyro();
 }
-
-void HAL_I2C_MasterRxCpltCallback(I2C_HandleTypeDef *hi2c) {
-    // Data has been received
-    // Process the data in rxBuffer (accelerometer data)
-}
-
-void HAL_I2C_MasterTxCpltCallback(I2C_HandleTypeDef *hi2c) {
-    // Data has been received
-    // Process the data in rxBuffer (accelerometer data)
-}
-
-/*void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef huart)
-{
-
-}
-
-void HAL_UART_RxCpltCallback(UART_HandleTypeDefhuart)
-{
-
-}*/
 /* USER CODE END 4 */
 
 /**
