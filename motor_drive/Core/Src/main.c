@@ -497,9 +497,12 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 {
+	HAL_GPIO_WritePin(GPIOC, M1IN2, GPIO_PIN_SET);
   i2c_proc_updateAccelData(hi2c2);
   i2c_proc_updateGyroData(hi2c2);
   Jetson_Bridge_TxGyro();
+	HAL_GPIO_WritePin(GPIOC, M1IN2, GPIO_PIN_RESET);
+
 }
 /* USER CODE END 4 */
 

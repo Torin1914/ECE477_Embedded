@@ -10,17 +10,13 @@
 #define ACCELX_ADJ .242
 #define ACCELY_ADJ .0022
 
-static float angle_x;
-static float angle_y;
-static float angle_z;
+static int16_t angle_x;
+static int16_t angle_y;
+static int16_t angle_z;
 
-static float pos_x;
-static float pos_y;
-static float pos_z;
-
-static float vel_x;
-static float vel_y;
-static float vel_z;
+static int16_t accel_x;
+static int16_t accel_y;
+static int16_t accel_z;
 
 void i2c_proc_updateGyroData(I2C_HandleTypeDef hi2c2)
 {
@@ -32,14 +28,11 @@ void i2c_proc_updateGyroData(I2C_HandleTypeDef hi2c2)
 	gyro[1] = (int16_t)((gyroData[3] << 8) | gyroData[2]); // Y-axis
 	gyro[2] = (int16_t)((gyroData[5] << 8) | gyroData[4]); // Z-axis
 
-	float gyroX = gyro[0] * G_SENSITIVITY / 1000;
-	float gyroY = gyro[1] * G_SENSITIVITY / 1000;
-	float gyroZ = gyro[2] * G_SENSITIVITY / 1000; //deg/sec
-
-	//integration of gyro to get approx angle since reset
-	//angle_x = angle_x + (gyroX * 1.0 / 60.0);
-	//angle_y = angle_y + (gyroY * 1.0 / 60.0);
-	//angle_z = angle_z + (gyroZ * 1.0 / 60.0);
+	__disable_irq();
+	angle_x = gyro[0];
+	angle_y = gyro[1];
+	angle_z = gyro[2]; //deg/sec
+	__enable_irq();
 
 	return;
 }
@@ -54,47 +47,41 @@ void i2c_proc_updateAccelData(I2C_HandleTypeDef hi2c2)
 	accel[1] = (int16_t)((accelData[3] << 8) | accelData[2]); // Y-axis
 	accel[2] = (int16_t)((accelData[5] << 8) | accelData[4]); // Z-axis
 
-	float accelX = (accel[0] * A_SENSITIVITY / 1000 * 9.81) - ACCELX_ADJ;
-	float accelY = (accel[1] * A_SENSITIVITY / 1000 * 9.81) - ACCELY_ADJ;
-	float accelZ = accel[2] * A_SENSITIVITY / 1000 * 9.81; //m/s2
-
-	//vel_x = vel_x + accelX * (1.0/60);
-	//vel_y = vel_y + accelY * (1.0/60);
-	//vel_z = vel_z + accelZ * (1.0/60);
-
-	//pos_x = pos_x + (vel_x * (1.0/60)) + ((accelX * (1.0/60) * (1.0/60)) / 2.0);
-	//pos_y = pos_y + (vel_y * (1.0/60)) + ((accelY * (1.0/60) * (1.0/60)) / 2.0);
-	//pos_z = pos_z + (vel_z * (1.0/60)) + ((accelZ * (1.0/60) * (1.0/60)) / 2.0);
+	__disable_irq();
+	accel_x = accel[0];
+	accel_y = accel[1];
+	accel_z = accel[2];
+	__enable_irq();
 
 	return;
 }
 
-float i2c_proc_getAngleX()
+int16_t i2c_proc_getAngleX()
 {
 	return angle_x;
 }
 
-float i2c_proc_getAngleY()
+int16_t i2c_proc_getAngleY()
 {
 	return angle_y;
 }
 
-float i2c_proc_getAngleZ()
+int16_t i2c_proc_getAngleZ()
 {
-	return angle_y;
+	return angle_z;
 }
 
-float i2c_proc_getAccelX()
+int16_t i2c_proc_getAccelX()
 {
-	return pos_x;
+	return accel_x;
 }
 
-float i2c_proc_getAccelY()
+int16_t i2c_proc_getAccelY()
 {
-	return pos_y;
+	return accel_y;
 }
 
-float i2c_proc_getAccelZ()
+int16_t i2c_proc_getAccelZ()
 {
-	return pos_z;
+	return accel_z;
 }

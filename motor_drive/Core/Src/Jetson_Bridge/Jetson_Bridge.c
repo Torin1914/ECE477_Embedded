@@ -19,6 +19,9 @@
 #include "motor_proc.h"
 #include "i2c_proc.h"
 
+#define G_SENSITIVITY 8.75
+
+
 /* for memcpy*/
 #include <string.h>
 
@@ -33,39 +36,23 @@ static uint16_t Jetson_Bridge_getCRC(Jetson_Bridge_Msg_T * msg)
     return 0u;
 }
 
-static void Jetson_Bridge_formatMsg(Jetson_Bridge_Msg_T * msg, uint8_t msg_id, uint8_t * data)
-{
-    msg->start_byte = JETSON_BRIDGE_START_BYTE;
-    msg->msg_id = msg_id;
-    memcpy(msg->data, data, sizeof(msg->data));
-    msg->crc = Jetson_Bridge_getCRC(msg);
-}
-
 void Jetson_Bridge_TxGyro()
 {
-    Jetson_Bridge_Msg_T gyro_x;
-    Jetson_Bridge_Msg_T gyro_y;
-    Jetson_Bridge_Msg_T gyro_z;
-
     /* format gyro_x message */
-    float angle_x = i2c_proc_getAngleX();
-    Jetson_Bridge_formatMsg(&gyro_x, JETSON_BRIDGE_MSG_ID_ANGLE_X, (uint8_t *) &angle_x);
+    int32_t angle_x = (int16_t) i2c_proc_getAngleX();
+	float gyroX = angle_x * G_SENSITIVITY / 1000;
+
     /*transmit gyro_x message*/
-    Jetson_Bridge_TxMsg(gyro_x);
+    Jetson_Bridge_TxMsg(JETSON_BRIDGE_MSG_ID_ANGLE_X, (uint8_t *) &angle_x);
 
     /* format gyro_y message */
-    float angle_y = i2c_proc_getAngleY();
-    Jetson_Bridge_formatMsg(&gyro_y, JETSON_BRIDGE_MSG_ID_ANGLE_Y, (uint8_t *) &angle_y);
+    int32_t angle_y = i2c_proc_getAngleY();
     /*transmit gyro_y message*/
-    Jetson_Bridge_TxMsg(gyro_y);
+    Jetson_Bridge_TxMsg(JETSON_BRIDGE_MSG_ID_ANGLE_Y, (uint8_t *) &angle_y);
 
-    float angle_z = i2c_proc_getAngleX();
-    Jetson_Bridge_formatMsg(&gyro_z, JETSON_BRIDGE_MSG_ID_ANGLE_Z, (uint8_t *) &angle_z);
+    int32_t angle_z = i2c_proc_getAngleZ();
     /*transmit gyro_z message*/
-    Jetson_Bridge_TxMsg(gyro_z);
-
-        
-    
+    Jetson_Bridge_TxMsg(JETSON_BRIDGE_MSG_ID_ANGLE_Z, (uint8_t *) &angle_z);
 }
 
 
@@ -74,10 +61,14 @@ void Jetson_Bridge_TxGyro()
  * 
  * @param tx_msg
  */
-void Jetson_Bridge_TxMsg(Jetson_Bridge_Msg_T tx_msg)
+void Jetson_Bridge_TxMsg(uint8_t msg_id, uint8_t * data)
 {
 
-    memcpy(&Jetson_Bridge_TxBuffer[Jetson_Bridge_TxIdx], &tx_msg, sizeof(Jetson_Bridge_Msg_T));
+    Jetson_Bridge_TxBuffer[Jetson_Bridge_TxIdx].start_byte = JETSON_BRIDGE_START_BYTE;
+    Jetson_Bridge_TxBuffer[Jetson_Bridge_TxIdx].msg_id = msg_id;
+    memcpy(Jetson_Bridge_TxBuffer[Jetson_Bridge_TxIdx].data, data, sizeof(Jetson_Bridge_TxBuffer[Jetson_Bridge_TxIdx].data));
+    Jetson_Bridge_TxBuffer[Jetson_Bridge_TxIdx].crc = Jetson_Bridge_getCRC(&Jetson_Bridge_TxBuffer[Jetson_Bridge_TxIdx]);
+
     Jetson_Bridge_TxIdx = (Jetson_Bridge_TxIdx + 1) % JETSON_BRIDGE_TXBUFFERSIZE;
     if(UART_Driver_BridgeMsg(Jetson_Bridge_TxBuffer[Jetson_Bridge_TxCurr]) == UART_DRIVER_SUCCESS)
     {
@@ -107,7 +98,6 @@ void Jetson_Bridge_MailboxUpdate(void)
 uint32_t Jetson_Bridge_RxBridgeMsg(uint8_t * rx_buff, uint8_t rx_buff_size)
 {
     /* nak buffer in case needed */
-    Jetson_Bridge_Msg_T tx_nak;
     uint32_t data = 0;
 
     /* copy RX buffer to a message */
@@ -120,8 +110,7 @@ uint32_t Jetson_Bridge_RxBridgeMsg(uint8_t * rx_buff, uint8_t rx_buff_size)
     /* check for start byte. if invalid start byte, return error */
     if(rx_msg.start_byte != JETSON_BRIDGE_START_BYTE)
     {
-        Jetson_Bridge_formatMsg(&tx_nak, JETSON_BRIDGE_MSG_ID_NAK_INVALIDSTART, (uint8_t *) &data);
-        Jetson_Bridge_TxMsg(tx_nak);
+        Jetson_Bridge_TxMsg(JETSON_BRIDGE_MSG_ID_NAK_INVALIDSTART, (uint8_t *) &data);
         return JETSON_BRIDGE_EXIT_FAILED;
     }
 
@@ -140,8 +129,7 @@ uint32_t Jetson_Bridge_RxBridgeMsg(uint8_t * rx_buff, uint8_t rx_buff_size)
             break;
         default:
             uint32_t data = 0;
-            Jetson_Bridge_formatMsg(&tx_nak, JETSON_BRIDGE_MSG_ID_NAK_INVALIDID, (uint8_t *) &data);
-            Jetson_Bridge_TxMsg(tx_nak);
+            Jetson_Bridge_TxMsg(JETSON_BRIDGE_MSG_ID_NAK_INVALIDID, (uint8_t *) &data);
             return JETSON_BRIDGE_EXIT_FAILED;
     }
     (void) rx_buff;
