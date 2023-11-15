@@ -37,9 +37,9 @@ void i2c_proc_updateGyroData(I2C_HandleTypeDef hi2c2)
 	float gyroZ = gyro[2] * G_SENSITIVITY / 1000; //deg/sec
 
 	//integration of gyro to get approx angle since reset
-	angle_x = angle_x + (gyroX * 1.0 / 60.0);
-	angle_y = angle_y + (gyroY * 1.0 / 60.0);
-	angle_z = angle_z + (gyroZ * 1.0 / 60.0);
+	//angle_x = angle_x + (gyroX * 1.0 / 60.0);
+	//angle_y = angle_y + (gyroY * 1.0 / 60.0);
+	//angle_z = angle_z + (gyroZ * 1.0 / 60.0);
 
 	return;
 }
@@ -58,13 +58,13 @@ void i2c_proc_updateAccelData(I2C_HandleTypeDef hi2c2)
 	float accelY = (accel[1] * A_SENSITIVITY / 1000 * 9.81) - ACCELY_ADJ;
 	float accelZ = accel[2] * A_SENSITIVITY / 1000 * 9.81; //m/s2
 
-	vel_x = vel_x + accelX * (1.0/60);
-	vel_y = vel_y + accelY * (1.0/60);
-	vel_z = vel_z + accelZ * (1.0/60);
+	//vel_x = vel_x + accelX * (1.0/60);
+	//vel_y = vel_y + accelY * (1.0/60);
+	//vel_z = vel_z + accelZ * (1.0/60);
 
-	pos_x = pos_x + (vel_x * (1.0/60)) + ((accelX * (1.0/60) * (1.0/60)) / 2.0);
-	pos_y = pos_y + (vel_y * (1.0/60)) + ((accelY * (1.0/60) * (1.0/60)) / 2.0);
-	pos_z = pos_z + (vel_z * (1.0/60)) + ((accelZ * (1.0/60) * (1.0/60)) / 2.0);
+	//pos_x = pos_x + (vel_x * (1.0/60)) + ((accelX * (1.0/60) * (1.0/60)) / 2.0);
+	//pos_y = pos_y + (vel_y * (1.0/60)) + ((accelY * (1.0/60) * (1.0/60)) / 2.0);
+	//pos_z = pos_z + (vel_z * (1.0/60)) + ((accelZ * (1.0/60) * (1.0/60)) / 2.0);
 
 	return;
 }

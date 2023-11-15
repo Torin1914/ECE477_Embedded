@@ -83,29 +83,13 @@ static void MX_USART1_UART_Init(void);
   */
 int main(void)
 {
-  /* USER CODE BEGIN 1 */
-
-  /* USER CODE END 1 */
-
-  /* MCU Configuration--------------------------------------------------------*/
-
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
-
-  /* USER CODE BEGIN Init */
-
-  /* USER CODE END Init */
 
   /* Configure the system clock */
   SystemClock_Config();
 
-  /* USER CODE BEGIN SysInit */
-
-  /* USER CODE END SysInit */
-
   /* Initialize all configured peripherals */
-  char dummy[] = "012345678";
-
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_TIM2_Init();
@@ -131,7 +115,6 @@ int main(void)
   HAL_StatusTypeDef ret1 = HAL_I2C_Mem_Write(&hi2c2, 212, 0x11, I2C_MEMADD_SIZE_8BIT, &gyro_on, 1, HAL_MAX_DELAY);
   HAL_StatusTypeDef ret2 = HAL_I2C_Mem_Write(&hi2c2, 212, 0x10, I2C_MEMADD_SIZE_8BIT, &accel_on, 1, HAL_MAX_DELAY);
   HAL_TIM_Base_Start_IT(&htim6);
-  /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
@@ -140,6 +123,7 @@ int main(void)
 	    //Jetson_Bridge_TxGyro();
 	    //Jetson_Bridge_TxGyro();
 	    //Jetson_Bridge_TxGyro();
+	  HAL_GPIO_WritePin(GPIOC, M1IN2, GPIO_PIN_RESET);
 
 	  //for(int i = 0; i < 5000000; i++);
     /* USER CODE END WHILE */
@@ -512,8 +496,8 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 {
-	i2c_proc_updateAccelData(hi2c2);
-	i2c_proc_updateGyroData(hi2c2);
+  i2c_proc_updateAccelData(hi2c2);
+  i2c_proc_updateGyroData(hi2c2);
   Jetson_Bridge_TxGyro();
 }
 /* USER CODE END 4 */

@@ -16,9 +16,6 @@
 #include "stm32f0xx_hal.h"
 #include "stm32f091xc.h"
 #include "Jetson_Bridge_Types.h"
-#include "Jetson_Bridge_Types.h"
-
-
 
 /* Function Definitions */
 uint8_t UART_Driver_TX(uint8_t *data_buff, uint8_t buff_len);
