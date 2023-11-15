@@ -1,14 +1,5 @@
 #include "motor_proc.h"
 
-#define M1IN1 0b1
-#define M1IN2 0b10
-#define M2IN1 0b100
-#define M2IN2 0b1000
-#define M3IN1 0b10000
-#define M3IN2 0b100000
-#define M4IN1 0b10000
-#define M4IN2 0b100000
-
 //MOTOR 1 & 2 are LEFT MOTORS
 //MOTOR 2 & 4 are BACK MOTORS
 

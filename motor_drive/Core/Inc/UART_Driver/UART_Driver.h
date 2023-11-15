@@ -15,12 +15,12 @@
 /* Includes */
 #include "stm32f0xx_hal.h"
 #include "stm32f091xc.h"
+#include "Jetson_Bridge_Types.h"
 
 /* Function Definitions */
-void UART_Driver_TX(uint8_t *data_buff, uint8_t buff_len);
+uint8_t UART_Driver_TX(uint8_t *data_buff, uint8_t buff_len);
+uint8_t UART_Driver_BridgeMsg(Jetson_Bridge_Msg_T tx_msg);
 void UART_Driver_RxInit(void);
-void DMA1_Ch2_3_DMA2_Ch1_2_IRQHandler(void);
-void USART1_IRQHandler(void);
 
 extern UART_HandleTypeDef huart1;
 extern DMA_HandleTypeDef hdma_usart1_rx;

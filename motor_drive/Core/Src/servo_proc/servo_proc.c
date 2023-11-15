@@ -22,17 +22,22 @@ int servo_angle(int angle)
 }
 
 /**
- * @brief function called to grab the ball
+ * @brief 
  * 
+ * @param close 0 if open, else if closed
  */
- void servo_proc_GrabBall(void)
+ void servo_proc_GrabBall(uint8_t close)
  {
-	  HAL_Delay(1000);
-	  servo1_control(120);
-	  servo2_control(50);
-	  HAL_Delay(1000);
-	  servo1_control(160);
-
-	  HAL_Delay(150);
-	  servo2_control(120);
+	if(!close)
+	{
+		servo1_control(120);
+		servo2_control(50);
+		HAL_Delay(1000);
+	}
+	else
+	{
+		servo1_control(160);
+		HAL_Delay(150);
+		servo2_control(120);
+	}
  }
