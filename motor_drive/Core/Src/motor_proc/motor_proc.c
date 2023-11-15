@@ -12,24 +12,43 @@ void move_robot(int8_t forward_effort, int8_t turning_effort) //TURNING EFFORT C
 	if(forward_effort  < 0)
 	{
 		direction = CCW;
+		forward_effort *= -1;
 	}
 
 	if(turning_effort <= 0)
 	{
-		motor1_control(direction, forward_effort);
-		motor2_control(direction, forward_effort);
-		motor3_control(direction, forward_effort + (turning_effort * forward_effort / 100));
-		motor4_control(direction, forward_effort + (turning_effort * forward_effort / 100));
-	}
-	else
-	{
-		motor1_control(direction, forward_effort - (turning_effort * forward_effort / 100));
-		motor2_control(direction, forward_effort - (turning_effort * forward_effort / 100));
+		motor1_control(direction, forward_effort + (turning_effort * forward_effort / 100));
+		motor2_control(direction, forward_effort + (turning_effort * forward_effort / 100));
 		motor3_control(direction, forward_effort);
 		motor4_control(direction, forward_effort);
 	}
+	else
+	{
+		motor1_control(direction, forward_effort);
+		motor2_control(direction, forward_effort);
+		motor3_control(direction, forward_effort - (turning_effort * forward_effort / 100));
+		motor4_control(direction, forward_effort - (turning_effort * forward_effort / 100));
+	}
 
 	return;
+}
+
+void crab_robot(int8_t effort)
+{
+	uint8_t direction1 = CW;
+	uint8_t direction2 = CCW;
+	if(effort  < 0)
+	{
+		direction1 = CCW;
+		direction2 = CW;
+		effort *= -1;
+	}
+
+	motor1_control(direction1, effort);
+	motor2_control(direction2, effort);
+	motor3_control(direction1, effort);
+	motor4_control(direction2, effort);
+
 }
 
 void motor1_control(int8_t direction, int8_t speed)
