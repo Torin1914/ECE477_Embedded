@@ -150,18 +150,6 @@ int main(void)
 
 	  HAL_Delay(1000);
 
-	  /*for(uint32_t i = 0; i < 500000; i++);
-	  motor2_control(CW, 50);
-	  for(uint32_t i = 0; i < 500000; i++);
-	  motor2_control(CCW, 100);
-	  for(uint32_t i = 0; i < 500000; i++);
-	  motor2_control(CCW, 50);
-	  for(uint32_t i = 0; i < 500000; i++);
-	  motor2_control(CW, 0);
-	  for(uint32_t i = 0; i < 500000; i++);
-	  UART_Driver_TX(Test_buff, sizeof(Test_buff));*/
-    /* USER CODE END WHILE */
-
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -409,9 +397,9 @@ static void MX_TIM6_Init(void)
 
   /* USER CODE END TIM6_Init 1 */
   htim6.Instance = TIM6;
-  htim6.Init.Prescaler = 7;
+  htim6.Init.Prescaler = 9;
   htim6.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim6.Init.Period = 1947;
+  htim6.Init.Period = 13332;
   htim6.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_Base_Init(&htim6) != HAL_OK)
   {
@@ -531,36 +519,7 @@ static void MX_GPIO_Init(void)
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 {
 	getAccelData(hi2c2);
-	/*HAL_I2C_DeInit(&hi2c2);
-	HAL_I2C_Init(&hi2c2);
-	uint8_t accelData[6];
-	uint8_t gyroData[6];
-	//HAL_I2C_Mem_Read(&hi2c2, 212, 0x22, I2C_MEMADD_SIZE_8BIT, gyroData, 6, HAL_MAX_DELAY);
-	//HAL_StatusTypeDef status = HAL_I2C_Mem_Read_DMA(&hi2c2, 212, 0x22, I2C_MEMADD_SIZE_8BIT, gyroData, 6);
-	//HAL_I2C_StateTypeDef state = HAL_I2C_GetState(&hi2c2);
-	uint8_t commandByte = 0x22;
-	HAL_StatusTypeDef status1 = HAL_I2C_Master_Transmit(&hi2c2, 212, &commandByte, 1, HAL_MAX_DELAY);
-	HAL_StatusTypeDef status2 = HAL_I2C_Master_Receive_DMA(&hi2c2, 212, gyroData, sizeof(gyroData));
-	uint32_t error = HAL_I2C_GetError(&hi2c2);
-	HAL_StatusTypeDef dma_state = HAL_DMA_PollForTransfer(&hdma_i2c2_rx, HAL_DMA_FULL_TRANSFER, HAL_MAX_DELAY);
-	HAL_StatusTypeDef ret = HAL_I2C_IsDeviceReady(&hi2c2, 212, 1, 100);
 
-	HAL_I2C_DeInit(&hi2c2);
-	HAL_I2C_Init(&hi2c2);
-	ret = HAL_I2C_IsDeviceReady(&hi2c2, 212, 1, 100);
-	//HAL_I2C_Mem_Read(&hi2c2, 212, 0x28, I2C_MEMADD_SIZE_8BIT, accelData, 6, HAL_MAX_DELAY);
-	//HAL_I2C_Mem_Read_DMA(&hi2c2, 212, 0x28, I2C_MEMADD_SIZE_8BIT, accelData, 6);
-	commandByte = 0x28;
-	HAL_StatusTypeDef status3 = HAL_I2C_Master_Transmit(&hi2c2, 212, &commandByte, 1, HAL_MAX_DELAY);
-	HAL_StatusTypeDef status4 = HAL_I2C_Master_Receive_DMA(&hi2c2, 212, accelData, sizeof(accelData));
-
-	int16_t gyroDataX = (int16_t)((gyroData[1] << 8) | gyroData[0]); // X-axis
-	int16_t gyroDataY = (int16_t)((gyroData[3] << 8) | gyroData[2]); // Y-axis
-	int16_t gyroDataZ = (int16_t)((gyroData[5] << 8) | gyroData[4]); // Z-axis
-
-	int16_t accelDataX = (int16_t)((accelData[1] << 8) | accelData[0]); // X-axis
-	int16_t accelDataY = (int16_t)((accelData[3] << 8) | accelData[2]); // Y-axis
-	int16_t accelDataZ = (int16_t)((accelData[5] << 8) | accelData[4]); // Z-axis*/
 }
 
 void HAL_I2C_MasterRxCpltCallback(I2C_HandleTypeDef *hi2c) {
