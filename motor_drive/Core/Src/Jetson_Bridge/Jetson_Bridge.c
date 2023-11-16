@@ -33,7 +33,7 @@ static uint16_t Jetson_Bridge_getCRC(Jetson_Bridge_Msg_T * msg)
     return 0u;
 }
 
-static void Jetson_Bridge_formatMsg(Jetson_Bridge_Msg_T * msg, uint8_t msg_id, uint8_t * data)
+void Jetson_Bridge_formatMsg(Jetson_Bridge_Msg_T * msg, uint8_t msg_id, uint8_t * data)
 {
     msg->start_byte = JETSON_BRIDGE_START_BYTE;
     msg->msg_id = msg_id;

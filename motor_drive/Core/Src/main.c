@@ -23,6 +23,7 @@
 #include "motor_proc.h"
 #include "Jetson_Bridge.h"
 #include "UART_Driver_Defines.h"
+#include "Jetson_Bridge_Defines.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -121,12 +122,10 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	    //Jetson_Bridge_TxGyro();
-	    //Jetson_Bridge_TxGyro();
-	    //Jetson_Bridge_TxGyro();
-	  HAL_GPIO_WritePin(GPIOC, M1IN2, GPIO_PIN_RESET);
-
-	  //for(int i = 0; i < 5000000; i++);
+	  Jetson_Bridge_Msg_T testing;
+	  uint8_t testing2 [4u] = "bluh";
+	  Jetson_Bridge_formatMsg(&testing, JETSON_BRIDGE_MSG_ID_ANGLE_X, testing2);
+	  Jetson_Bridge_TxMsg(testing);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -499,7 +498,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 {
   i2c_proc_updateAccelData(hi2c2);
   i2c_proc_updateGyroData(hi2c2);
-  Jetson_Bridge_TxGyro();
+  //Jetson_Bridge_TxGyro();
 }
 /* USER CODE END 4 */
 
