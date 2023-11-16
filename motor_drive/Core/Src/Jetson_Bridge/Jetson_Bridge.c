@@ -40,8 +40,6 @@ void Jetson_Bridge_TxGyro()
 {
     /* format gyro_x message */
     int32_t angle_x = (int16_t) i2c_proc_getAngleX();
-	float gyroX = angle_x * G_SENSITIVITY / 1000;
-
     /*transmit gyro_x message*/
     Jetson_Bridge_TxMsg(JETSON_BRIDGE_MSG_ID_ANGLE_X, (uint8_t *) &angle_x);
 
@@ -55,6 +53,22 @@ void Jetson_Bridge_TxGyro()
     Jetson_Bridge_TxMsg(JETSON_BRIDGE_MSG_ID_ANGLE_Z, (uint8_t *) &angle_z);
 }
 
+void Jetson_Bridge_TxAccel()
+{
+    /* format gyro_x message */
+    int32_t accel_x = (int16_t) i2c_proc_getAccelX();
+    /*transmit gyro_x message*/
+    Jetson_Bridge_TxMsg(JETSON_BRIDGE_MSG_ID_ACCEL_X, (uint8_t *) &accel_x);
+
+    /* format gyro_y message */
+    int32_t accel_y = i2c_proc_getAccelY();
+    /*transmit gyro_y message*/
+    Jetson_Bridge_TxMsg(JETSON_BRIDGE_MSG_ID_ACCEL_Y, (uint8_t *) &accel_y);
+
+    int32_t accel_z = i2c_proc_getAccelZ();
+    /*transmit gyro_z message*/
+    Jetson_Bridge_TxMsg(JETSON_BRIDGE_MSG_ID_ACCEL_Z, (uint8_t *) &accel_z);
+}
 
 /**
  * @brief Transmit message by adding it to the TX fifo
@@ -126,6 +140,7 @@ uint32_t Jetson_Bridge_RxBridgeMsg(uint8_t * rx_buff, uint8_t rx_buff_size)
             Jetson_Bridge_TxGyro();
             break;
         case JETSON_BRIDGE_MSG_ID_IMUACCELREQ:
+            Jetson_Bridge_TxAccel();
             break;
         default:
             uint32_t data = 0;

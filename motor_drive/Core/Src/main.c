@@ -112,24 +112,14 @@ int main(void)
 
   uint8_t gyro_on = 0b10000000;
   uint8_t accel_on = 0b10000000;
-  HAL_StatusTypeDef ret = HAL_I2C_IsDeviceReady(&hi2c2, 212, 1, 100);
-  HAL_StatusTypeDef ret1 = HAL_I2C_Mem_Write(&hi2c2, 212, 0x11, I2C_MEMADD_SIZE_8BIT, &gyro_on, 1, HAL_MAX_DELAY);
-  HAL_StatusTypeDef ret2 = HAL_I2C_Mem_Write(&hi2c2, 212, 0x10, I2C_MEMADD_SIZE_8BIT, &accel_on, 1, HAL_MAX_DELAY);
+  (void) HAL_I2C_IsDeviceReady(&hi2c2, 212, 1, 100);
+  (void) HAL_I2C_Mem_Write(&hi2c2, 212, 0x11, I2C_MEMADD_SIZE_8BIT, &gyro_on, 1, HAL_MAX_DELAY);
+  (void) HAL_I2C_Mem_Write(&hi2c2, 212, 0x10, I2C_MEMADD_SIZE_8BIT, &accel_on, 1, HAL_MAX_DELAY);
   HAL_TIM_Base_Start_IT(&htim6);
 
   /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
   while (1)
   {
-	    //Jetson_Bridge_TxGyro();
-	    //Jetson_Bridge_TxGyro();
-	    //Jetson_Bridge_TxGyro();
-	  HAL_GPIO_WritePin(GPIOC, M1IN2, GPIO_PIN_RESET);
-
-	  //for(int i = 0; i < 5000000; i++);
-    /* USER CODE END WHILE */
-
-    /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
 }
@@ -497,11 +487,10 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 {
-	HAL_GPIO_WritePin(GPIOC, M1IN2, GPIO_PIN_SET);
   i2c_proc_updateAccelData(hi2c2);
   i2c_proc_updateGyroData(hi2c2);
   Jetson_Bridge_TxGyro();
-	HAL_GPIO_WritePin(GPIOC, M1IN2, GPIO_PIN_RESET);
+  Jetson_Bridge_TxAccel();
 
 }
 /* USER CODE END 4 */

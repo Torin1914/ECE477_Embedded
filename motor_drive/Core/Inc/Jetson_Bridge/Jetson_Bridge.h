@@ -17,6 +17,7 @@
 
 
 void Jetson_Bridge_TxGyro();
+void Jetson_Bridge_TxAccel();
 void Jetson_Bridge_MailboxUpdate(void);
 void Jetson_Bridge_TxMsg(uint8_t msg_id, uint8_t * data);
 uint32_t Jetson_Bridge_RxBridgeMsg(uint8_t * rx_buff, uint8_t rx_buff_size);
