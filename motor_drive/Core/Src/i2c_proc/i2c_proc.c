@@ -21,7 +21,7 @@ static int16_t accel_z;
 void i2c_proc_updateGyroData(I2C_HandleTypeDef hi2c2)
 {
 	uint8_t gyroData[6];
-	HAL_StatusTypeDef ret = HAL_I2C_Mem_Read(&hi2c2, 212, 0x22, I2C_MEMADD_SIZE_8BIT, gyroData, 6, HAL_MAX_DELAY);
+	(void) HAL_I2C_Mem_Read(&hi2c2, 212, 0x22, I2C_MEMADD_SIZE_8BIT, gyroData, 6, HAL_MAX_DELAY);
 
 	int16_t gyro[3];
 	gyro[0] = (int16_t)((gyroData[1] << 8) | gyroData[0]); // X-axis
@@ -40,7 +40,7 @@ void i2c_proc_updateGyroData(I2C_HandleTypeDef hi2c2)
 void i2c_proc_updateAccelData(I2C_HandleTypeDef hi2c2)
 {
 	uint8_t accelData[6];
-	HAL_I2C_Mem_Read(&hi2c2, IMU_ADDRESS, ACCEL_ADDRESS, I2C_MEMADD_SIZE_8BIT, accelData, 6, HAL_MAX_DELAY);
+	(void) HAL_I2C_Mem_Read(&hi2c2, IMU_ADDRESS, ACCEL_ADDRESS, I2C_MEMADD_SIZE_8BIT, accelData, 6, HAL_MAX_DELAY);
 
 	int16_t accel[3];
 	accel[0] = (int16_t)((accelData[1] << 8) | accelData[0]); // X-axis
