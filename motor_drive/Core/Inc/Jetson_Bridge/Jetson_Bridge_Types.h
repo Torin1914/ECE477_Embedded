@@ -15,7 +15,7 @@
 typedef struct bridge_msg {
     uint8_t start_byte;
     uint8_t msg_id;
-    uint8_t data[4];
+    uint8_t data [4];
     uint16_t crc;
 } Jetson_Bridge_Msg_T;
 

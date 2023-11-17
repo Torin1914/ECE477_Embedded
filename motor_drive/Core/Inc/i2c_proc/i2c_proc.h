@@ -6,12 +6,12 @@
 void i2c_proc_updateGyroData(I2C_HandleTypeDef);
 void i2c_proc_updateAccelData(I2C_HandleTypeDef);
 
-float i2c_proc_getAngleX();
-float i2c_proc_getAngleY();
-float i2c_proc_getAngleZ();
+int16_t i2c_proc_getAngleX();
+int16_t i2c_proc_getAngleY();
+int16_t i2c_proc_getAngleZ();
 
-float i2c_proc_getAccelX();
-float i2c_proc_getAccelY();
-float i2c_proc_getAccelZ();
+int16_t i2c_proc_getAccelX();
+int16_t i2c_proc_getAccelY();
+int16_t i2c_proc_getAccelZ();
 
 #endif

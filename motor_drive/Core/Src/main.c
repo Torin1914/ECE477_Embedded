@@ -23,26 +23,12 @@
 #include "motor_proc.h"
 #include "Jetson_Bridge.h"
 #include "UART_Driver_Defines.h"
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
-
-/* USER CODE END Includes */
-
-/* Private typedef -----------------------------------------------------------*/
-/* USER CODE BEGIN PTD */
-
-/* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define CW 1
 #define CCW 0
 /* USER CODE END PD */
-
-/* Private macro -------------------------------------------------------------*/
-/* USER CODE BEGIN PM */
-
-/* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
 I2C_HandleTypeDef hi2c2;
@@ -55,10 +41,6 @@ TIM_HandleTypeDef htim6;
 UART_HandleTypeDef huart1;
 DMA_HandleTypeDef hdma_usart1_rx;
 DMA_HandleTypeDef hdma_usart1_tx;
-
-/* USER CODE BEGIN PV */
-
-/* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
@@ -99,7 +81,6 @@ int main(void)
   MX_I2C2_Init();
   MX_USART1_UART_Init();
 
-  /* USER CODE BEGIN 2 */
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);
@@ -112,26 +93,14 @@ int main(void)
 
   uint8_t gyro_on = 0b10000000;
   uint8_t accel_on = 0b10000000;
-  HAL_StatusTypeDef ret = HAL_I2C_IsDeviceReady(&hi2c2, 212, 1, 100);
-  HAL_StatusTypeDef ret1 = HAL_I2C_Mem_Write(&hi2c2, 212, 0x11, I2C_MEMADD_SIZE_8BIT, &gyro_on, 1, HAL_MAX_DELAY);
-  HAL_StatusTypeDef ret2 = HAL_I2C_Mem_Write(&hi2c2, 212, 0x10, I2C_MEMADD_SIZE_8BIT, &accel_on, 1, HAL_MAX_DELAY);
+  (void) HAL_I2C_IsDeviceReady(&hi2c2, 212, 1, 100);
+  (void) HAL_I2C_Mem_Write(&hi2c2, 212, 0x11, I2C_MEMADD_SIZE_8BIT, &gyro_on, 1, HAL_MAX_DELAY);
+  (void) HAL_I2C_Mem_Write(&hi2c2, 212, 0x10, I2C_MEMADD_SIZE_8BIT, &accel_on, 1, HAL_MAX_DELAY);
   HAL_TIM_Base_Start_IT(&htim6);
 
   /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-	    //Jetson_Bridge_TxGyro();
-	    //Jetson_Bridge_TxGyro();
-	    //Jetson_Bridge_TxGyro();
-	  HAL_GPIO_WritePin(GPIOC, M1IN2, GPIO_PIN_RESET);
-
-	  //for(int i = 0; i < 5000000; i++);
-    /* USER CODE END WHILE */
-
-    /* USER CODE BEGIN 3 */
+  while (1){
   }
-  /* USER CODE END 3 */
 }
 
 /**
@@ -183,14 +152,6 @@ void SystemClock_Config(void)
   */
 static void MX_I2C2_Init(void)
 {
-
-  /* USER CODE BEGIN I2C2_Init 0 */
-
-  /* USER CODE END I2C2_Init 0 */
-
-  /* USER CODE BEGIN I2C2_Init 1 */
-
-  /* USER CODE END I2C2_Init 1 */
   hi2c2.Instance = I2C2;
   hi2c2.Init.Timing = 0x00101D37;
   hi2c2.Init.OwnAddress1 = 0;
@@ -218,10 +179,6 @@ static void MX_I2C2_Init(void)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN I2C2_Init 2 */
-
-  /* USER CODE END I2C2_Init 2 */
-
 }
 
 /**
@@ -231,18 +188,10 @@ static void MX_I2C2_Init(void)
   */
 static void MX_TIM2_Init(void)
 {
-
-  /* USER CODE BEGIN TIM2_Init 0 */
-
-  /* USER CODE END TIM2_Init 0 */
-
   TIM_ClockConfigTypeDef sClockSourceConfig = {0};
   TIM_MasterConfigTypeDef sMasterConfig = {0};
   TIM_OC_InitTypeDef sConfigOC = {0};
 
-  /* USER CODE BEGIN TIM2_Init 1 */
-
-  /* USER CODE END TIM2_Init 1 */
   htim2.Instance = TIM2;
   htim2.Init.Prescaler = 0;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
@@ -288,9 +237,7 @@ static void MX_TIM2_Init(void)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN TIM2_Init 2 */
 
-  /* USER CODE END TIM2_Init 2 */
   HAL_TIM_MspPostInit(&htim2);
 
 }
@@ -302,18 +249,10 @@ static void MX_TIM2_Init(void)
   */
 static void MX_TIM3_Init(void)
 {
-
-  /* USER CODE BEGIN TIM3_Init 0 */
-
-  /* USER CODE END TIM3_Init 0 */
-
   TIM_ClockConfigTypeDef sClockSourceConfig = {0};
   TIM_MasterConfigTypeDef sMasterConfig = {0};
   TIM_OC_InitTypeDef sConfigOC = {0};
 
-  /* USER CODE BEGIN TIM3_Init 1 */
-
-  /* USER CODE END TIM3_Init 1 */
   htim3.Instance = TIM3;
   htim3.Init.Prescaler = 7;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
@@ -351,9 +290,6 @@ static void MX_TIM3_Init(void)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN TIM3_Init 2 */
-
-  /* USER CODE END TIM3_Init 2 */
   HAL_TIM_MspPostInit(&htim3);
 
 }
@@ -390,10 +326,6 @@ static void MX_TIM6_Init(void)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN TIM6_Init 2 */
-
-  /* USER CODE END TIM6_Init 2 */
-
 }
 
 /**
@@ -403,16 +335,8 @@ static void MX_TIM6_Init(void)
   */
 static void MX_USART1_UART_Init(void)
 {
-
-  /* USER CODE BEGIN USART1_Init 0 */
-
-  /* USER CODE END USART1_Init 0 */
-
-  /* USER CODE BEGIN USART1_Init 1 */
-
-  /* USER CODE END USART1_Init 1 */
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = 115200;
+  huart1.Init.BaudRate = 230400;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;
@@ -425,9 +349,6 @@ static void MX_USART1_UART_Init(void)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN USART1_Init 2 */
-
-  /* USER CODE END USART1_Init 2 */
 
 }
 
@@ -458,8 +379,6 @@ static void MX_DMA_Init(void)
 static void MX_GPIO_Init(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
-/* USER CODE BEGIN MX_GPIO_Init_1 */
-/* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOF_CLK_ENABLE();
@@ -489,19 +408,16 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-/* USER CODE BEGIN MX_GPIO_Init_2 */
-/* USER CODE END MX_GPIO_Init_2 */
 }
 
-/* USER CODE BEGIN 4 */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 {
   i2c_proc_updateAccelData(hi2c2);
   i2c_proc_updateGyroData(hi2c2);
   Jetson_Bridge_TxGyro();
+  Jetson_Bridge_TxAccel();
+
 }
-/* USER CODE END 4 */
 
 /**
   * @brief  This function is executed in case of error occurrence.
@@ -509,13 +425,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
   */
 void Error_Handler(void)
 {
-  /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
   __disable_irq();
   while (1)
   {
   }
-  /* USER CODE END Error_Handler_Debug */
 }
 
 #ifdef  USE_FULL_ASSERT
