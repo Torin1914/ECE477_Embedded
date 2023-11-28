@@ -6,7 +6,7 @@
 #define CW 1
 #define CCW 0
 
-void move_robot(int8_t forward_effort, int8_t turning_effort) //TURNING EFFORT CANNOT BE GREATER THAN FORWARD EFFORT
+void move_robot(int8_t forward_effort, int8_t turning_effort)
 {
 	uint8_t direction = CW;
 	if(forward_effort  < 0)
@@ -15,7 +15,11 @@ void move_robot(int8_t forward_effort, int8_t turning_effort) //TURNING EFFORT C
 		forward_effort *= -1;
 	}
 
-	if(turning_effort <= 0)
+	if(forward_effort == 0 && turning_effort != 0)
+	{
+		rotate_robot(direction);
+	}
+	else if(turning_effort <= 0)
 	{
 		motor1_control(direction, forward_effort + (turning_effort * forward_effort / 100));
 		motor2_control(direction, forward_effort + (turning_effort * forward_effort / 100));
@@ -31,6 +35,24 @@ void move_robot(int8_t forward_effort, int8_t turning_effort) //TURNING EFFORT C
 	}
 
 	return;
+}
+
+void rotate_robot(int8_t direction)
+{
+	if(direction > 0)
+	{
+		motor1_control(1, 60);
+		motor2_control(1, 60);
+		motor3_control(0, 60);
+		motor4_control(0, 60);
+	}
+	else
+	{
+		motor1_control(0, 60);
+		motor2_control(0, 60);
+		motor3_control(1, 60);
+		motor4_control(1, 60);
+	}
 }
 
 void crab_robot(int8_t effort)

@@ -31,13 +31,12 @@ int servo_angle(int angle)
 	if(!close)
 	{
 		servo1_control(120);
-		servo2_control(50);
-		HAL_Delay(1000);
+		servo2_control(20);
 	}
 	else
 	{
-		servo1_control(160);
-		HAL_Delay(150);
 		servo2_control(120);
+		for(int i=0;i<1000;i++)for(int j=0;j<400;j++)__NOP();
+		servo1_control(160);
 	}
  }
