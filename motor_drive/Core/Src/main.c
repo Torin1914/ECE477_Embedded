@@ -23,6 +23,7 @@
 #include "motor_proc.h"
 #include "Jetson_Bridge.h"
 #include "UART_Driver_Defines.h"
+#include "servo_proc.h"
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
@@ -51,14 +52,8 @@ static void MX_TIM3_Init(void);
 static void MX_TIM6_Init(void);
 static void MX_I2C2_Init(void);
 static void MX_USART1_UART_Init(void);
-/* USER CODE BEGIN PFP */
-
-/* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
-/* USER CODE BEGIN 0 */
-
-/* USER CODE END 0 */
 
 /**
   * @brief  The application entry point.
@@ -100,6 +95,17 @@ int main(void)
 
   /* Infinite loop */
   while (1){
+    if(!servo_proc_GetClose()) //open
+    {
+      servo1_control(120);
+      servo2_control(20);
+    }
+    else //closed
+    {
+      servo2_control(120);
+      for(int i=0;i<1000;i++)for(int j=0;j<150;j++)__NOP();
+      servo1_control(160);
+    }
   }
 }
 
