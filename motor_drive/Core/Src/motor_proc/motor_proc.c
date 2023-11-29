@@ -17,7 +17,7 @@ void move_robot(int8_t forward_effort, int8_t turning_effort)
 
 	if(forward_effort == 0 && turning_effort != 0)
 	{
-		rotate_robot(direction);
+		rotate_robot(direction, turning_effort);
 	}
 	else if(turning_effort <= 0)
 	{
@@ -37,21 +37,21 @@ void move_robot(int8_t forward_effort, int8_t turning_effort)
 	return;
 }
 
-void rotate_robot(int8_t direction)
+void rotate_robot(int8_t direction, int8_t turning_effort)
 {
 	if(direction > 0)
 	{
-		motor1_control(1, 60);
-		motor2_control(1, 60);
-		motor3_control(0, 60);
-		motor4_control(0, 60);
+		motor1_control(1, turning_effort);
+		motor2_control(1, turning_effort);
+		motor3_control(0, turning_effort);
+		motor4_control(0, turning_effort);
 	}
 	else
 	{
-		motor1_control(0, 60);
-		motor2_control(0, 60);
-		motor3_control(1, 60);
-		motor4_control(1, 60);
+		motor1_control(0, turning_effort);
+		motor2_control(0, turning_effort);
+		motor3_control(1, turning_effort);
+		motor4_control(1, turning_effort);
 	}
 }
 

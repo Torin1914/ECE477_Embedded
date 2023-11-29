@@ -4,7 +4,7 @@
 #include "stm32f0xx_hal.h"
 
 void move_robot(int8_t, int8_t);
-void rotate_robot(int8_t);
+void rotate_robot(int8_t direction, int8_t turning_effort);
 void crab_robot(int8_t);
 
 void motor1_control(int8_t, int8_t);
