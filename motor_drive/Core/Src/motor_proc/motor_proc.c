@@ -17,6 +17,11 @@ void move_robot(int8_t forward_effort, int8_t turning_effort)
 
 	if(forward_effort == 0 && turning_effort != 0)
 	{
+		if(turning_effort < 0)
+		{
+			direction = CCW;
+			turning_effort *= -1;
+		}
 		rotate_robot(direction, turning_effort);
 	}
 	else if(turning_effort <= 0)
